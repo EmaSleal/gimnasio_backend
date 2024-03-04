@@ -1,0 +1,101 @@
+services:
+  postgres:
+    container_name: db-microservices
+    image: postgres
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: password123
+      POSTGRES_DB: gym_authentication
+      PGDATA: /data/postgres
+    volumes:
+      - postgres:/data/postgres
+    ports:
+      - "5432:5432"
+    networks:
+      - postgres
+    restart: unless-stopped
+  eureka-server:
+    container_name: eureka-server
+    build:
+      context: ./eureka_server
+
+    ports:
+      - "8761:8761"
+    networks:
+      - spring
+    restart: unless-stopped
+  rabbitmq:
+    image: rabbitmq:3.9.11-management-alpine
+    container_name: rabbitmq-user-service
+    ports:
+      - "5672:5672"
+      - "15672:15672"
+    networks:
+      - spring
+  config-service:
+    container_name: config-service
+    build:
+        context: ./config-service
+    ports:
+      - "8889:8889"
+    networks:
+      - spring
+    depends_on:
+      - rabbitmq
+      - eureka-server
+    restart: unless-stopped
+  api-gateway:
+    container_name: api-gateway
+    build:
+        context: ./api-gateway
+    ports:
+      - "8590:8590"
+    networks:
+      - spring
+    depends_on:
+      - rabbitmq
+      - eureka-server
+    restart: unless-stopped
+
+  authentication:
+    container_name: authentication
+    build:
+        context: ./authentication
+    ports:
+      - "8583:8583"
+    networks:
+      - spring
+      - postgres
+    depends_on:
+      - rabbitmq
+      - eureka-server
+      - api-gateway
+      - user-service
+    restart: unless-stopped
+  user-service:
+    container_name: user-service
+    build:
+        context: ./user-service
+    ports:
+      - "8588:8588"
+    networks:
+      - spring
+      - postgres
+    depends_on:
+      - postgres
+      - rabbitmq
+      - eureka-server
+      - api-gateway
+    restart: unless-stopped
+
+
+
+networks:
+  postgres:
+    driver: bridge
+  spring:
+    driver: bridge
+
+volumes:
+  postgres:
+  pgadmin:

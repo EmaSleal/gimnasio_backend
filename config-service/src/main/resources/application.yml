@@ -1,0 +1,18 @@
+server:
+  port: 8888
+
+eureka:
+  client:
+    service-url:
+      defaultZone: http://192.168.100.111:8761/eureka/
+      fetch-registry: true
+      register-with-eureka: true
+spring:
+  application:
+    name: config-service
+  cloud:
+    config:
+      server:
+        git:
+          uri: https://github.com/EmaSleal/config-server.git
+          clone-on-start: true

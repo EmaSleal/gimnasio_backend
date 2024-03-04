@@ -1,0 +1,30 @@
+logging:
+  pattern:
+    level: '%5p [${spring.application.name:},%X{traceId:-},%X{spanId:-}]'
+
+#puerto 8583
+server:
+    port: 8583
+spring:
+    application:
+        name: authentication
+    sleuth:
+      propagation:
+        type: w3c
+      trace-id128: true
+      supports-join: false
+    zipkin:
+      base-url: http://localhost:9411
+
+eureka:
+  client:
+    service-url:
+      defaultZone: http://192.168.100.111:8761/eureka/
+      fetch-registry: true
+      register-with-eureka: true
+jwt:
+    secret: 404E635266556A586E3272357538782F413F4428472B4B6250645367566B5970
+    expiration: 86400000
+sender:
+    key:
+      re_X7qY3NFp_ETffUyjtLJpgTMcrzdhvdB4c
