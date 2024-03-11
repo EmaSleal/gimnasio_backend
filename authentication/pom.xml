@@ -99,6 +99,7 @@
         </dependency>
 
         <!-- https://mvnrepository.com/artifact/io.zipkin.reporter2/zipkin-reporter-brave -->
+        <!--
         <dependency>
             <groupId>io.zipkin.reporter2</groupId>
             <artifactId>zipkin-reporter-brave</artifactId>
@@ -115,7 +116,7 @@
             <artifactId>zipkin</artifactId>
             <version>2.23.2</version>
         </dependency>
-        <!--
+
         TODO: Investigate why this dependency is not working in micrometer
         <dependency>
             <groupId>org.springframework.cloud</groupId>

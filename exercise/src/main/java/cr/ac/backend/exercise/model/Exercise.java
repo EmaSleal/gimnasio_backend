@@ -1,12 +1,4 @@
-package cr.ac.backend.exercise.model;
 
-
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-import jakarta.persistence.*;
-import lombok.*;
-
-import java.io.Serializable;
-import java.util.List;
 
 /*
 ID de Exercise:
@@ -42,15 +34,23 @@ Calificación del Entrenador:
 Tipo: Número decimal.
 Descripción: Calificación asignada por el entrenador al ejercicio.
 */
+package cr.ac.backend.exercise.model;
+
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import jakarta.persistence.*;
+import lombok.*;
+
+import java.io.Serializable;
+import java.util.HashSet; // Added import for HashSet
+import java.util.Set; // Added import for Set
+
 @Entity
 @Getter
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
 @Table(name = "exercise")
-
-public class Exercise implements Serializable{
-
+public class Exercise implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
@@ -62,23 +62,26 @@ public class Exercise implements Serializable{
     @Column(name = "name", nullable = false)
     private String name;
 
-    @Column(name = "muscular_group", nullable = false)
-    private String muscularGroup;
+    @ManyToOne
+    @JsonIgnoreProperties("exercises")
+    @JoinColumn(name = "muscular_groups", nullable = false)
+    private MuscularGroup muscularGroup;
 
     @Column(name = "muscular_load", nullable = false)
     @Enumerated(EnumType.STRING)
-    private MuscularLoad muscularLoad;
+    private ExerciseEnums.MuscularLoad muscularLoad;
 
     @JsonIgnoreProperties("exercise")
     @OneToMany(mappedBy = "exercise", cascade = CascadeType.ALL)
-    private List<ExerciseSpecified> exerciseSpecified;
+    private Set<ExerciseSpecified> exerciseSpecified = new HashSet<>(); // Changed List to Set
 
-    /*enum to muscularLoad*/
-    public enum MuscularLoad {
-        LOW,
-        MEDIUM,
-        HIGH
-    }
+    @JsonIgnoreProperties("exerciseSpecified")
+    @ManyToMany
+    @JoinTable(name = "exercise_routine",
+            joinColumns = @JoinColumn(name = "id_exercise"),
+            inverseJoinColumns = @JoinColumn(name = "id_routine_day"))
+    private Set<RoutineDay> routineDay = new HashSet<>(); // Changed List to Set
+
 
     @Override
     public String toString() {
@@ -86,11 +89,9 @@ public class Exercise implements Serializable{
                 "id=" + id +
                 ", name='" + name + '\'' +
                 ", muscularGroup='" + muscularGroup + '\'' +
-                ", muscularLoad=" + muscularLoad.toString() +
+                ", muscularLoad=" + (muscularLoad != null ? muscularLoad.toString() : "null") + // Handle potential null value
                 ", exerciseSpecified=" + exerciseSpecified +
                 '}';
     }
 }
-
-
 

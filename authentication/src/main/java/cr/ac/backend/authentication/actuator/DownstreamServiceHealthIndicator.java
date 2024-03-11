@@ -5,7 +5,7 @@ import org.springframework.boot.actuate.health.ReactiveHealthIndicator;
 import org.springframework.stereotype.Component;
 import reactor.core.publisher.Mono;
 
-@Component
+//@Component
 public class DownstreamServiceHealthIndicator implements ReactiveHealthIndicator {
 
     @Override

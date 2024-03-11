@@ -12,6 +12,7 @@ public class RouterValidator {
     public static final List<String> publicRoutes = List.of(
             "/Login",
             "/forgot-password"
+
     );
 
     public static final List<String> trainerRoutes = List.of(
@@ -19,7 +20,8 @@ public class RouterValidator {
             "/user/all",
             "/trainer/add",
             "/trainer/update",
-            "/trainer/delete"
+            "/trainer/delete",
+            "/exercise/all"
     );
 
     public static final List<String> clientRoutes = List.of(

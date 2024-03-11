@@ -5,7 +5,8 @@ import jakarta.persistence.*;
 import lombok.*;
 
 import java.io.Serializable;
-import java.util.List;
+import java.util.HashSet; // Added import for HashSet
+import java.util.Set; // Added import for Set
 
 @Entity
 @AllArgsConstructor
@@ -39,12 +40,7 @@ public class ExerciseSpecified implements Serializable {
     @JoinColumn(name = "id_exercise", nullable = false)
     private Exercise exercise;
 
-    @JsonIgnoreProperties("exerciseSpecified")
-    @ManyToMany
-    @JoinTable(name = "exercise_rutine",
-            joinColumns = @JoinColumn(name = "id_exercise_specified"),
-            inverseJoinColumns = @JoinColumn(name = "id_rutine"))
-    private List<RutineDay> rutineDay;
+
 
     @Override
     public String toString() {
@@ -54,8 +50,7 @@ public class ExerciseSpecified implements Serializable {
                 ", setsNumber=" + setsNumber +
                 ", recommendedWeight=" + recommendedWeight +
                 ", trainerRating=" + trainerRating +
-                ", exercise=" + exercise +
-                ", rutineDay=" + rutineDay +
+                ", exercise=" + (exercise != null ? exercise.getId() : "null") + // Handle potential null value
                 '}';
     }
 }

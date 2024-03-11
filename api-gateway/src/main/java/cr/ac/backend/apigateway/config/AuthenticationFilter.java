@@ -28,6 +28,7 @@ public class AuthenticationFilter implements GatewayFilter {
     @Override
     public Mono<Void> filter(ServerWebExchange exchange, GatewayFilterChain chain) {
         ServerHttpRequest request =  exchange.getRequest();
+        log.info("Request path: {}", request.getPath());
 
 
         if (routerValidator.isSecured.test(request)) {
@@ -50,6 +51,8 @@ public class AuthenticationFilter implements GatewayFilter {
                 return onError(exchange, HttpStatus.UNAUTHORIZED);
             }else if (routerValidator.isAdmin.test(request) && !role.equals("ADMIN")) {
                 return onError(exchange, HttpStatus.UNAUTHORIZED);
+            } else {
+                log.info("Request is authorized");
             }
         }
         return chain.filter(exchange);

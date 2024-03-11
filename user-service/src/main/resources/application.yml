@@ -21,7 +21,7 @@ spring:
         driver-class-name: org.postgresql.Driver
     jpa:
         hibernate:
-            ddl-auto: none #colocar none cuando ya se haya creado la base de datos
+            ddl-auto: create #colocar none cuando ya se haya creado la base de datos
         show-sql: true
         properties:
             hibernate:

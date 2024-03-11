@@ -1,6 +1,6 @@
 package cr.ac.backend.authentication.config;
 
-
+/*
 import brave.Tracer;
 import io.micrometer.tracing.Span;
 import io.micrometer.tracing.brave.bridge.BraveTracer;
@@ -20,17 +20,17 @@ import zipkin2.reporter.brave.ZipkinSpanHandler;
 /*@AutoConfiguration(before = MicrometerTracingAutoConfiguration.class)
 @ConditionalOnClass({ Tracer.class, BraveTracer.class})
 @EnableConfigurationProperties(TracingProperties.class)
-@ConditionalOnEnabledTracing*/
+@ConditionalOnEnabledTracing
 @Configuration(proxyBeanMethods = false)
 
 //ZipkinSpanHandler
-@ConditionalOnClass(ZipkinSpanHandler.class)
+@ConditionalOnClass(ZipkinSpanHandler.class)*/
 public class BraveAutoConfig {
 
-    @Bean
+    /*@Bean
     @ConditionalOnMissingBean
     @ConditionalOnBean(Reporter.class)
     ZipkinSpanHandler zipkinSpanHandler(Reporter<zipkin2.Span> reporter) {
         return (ZipkinSpanHandler) ZipkinSpanHandler.newBuilder(reporter).build();
-    }
+    }*/
 }

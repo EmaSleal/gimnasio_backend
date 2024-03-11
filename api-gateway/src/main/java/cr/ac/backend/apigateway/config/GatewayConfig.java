@@ -25,6 +25,10 @@ public class GatewayConfig {
                 .route("user-service", r -> r.path("/user/**")
                         .filters(f -> f.filter(filter))
                         .uri("lb://user-service"))
+                //if the path is exercise, exerciseSpecified, rutine, rutineDay, muscularGroup use "lb://exercise"
+                .route("exercise-service", r -> r.path("/exercise/**", "/exerciseSpecified/**", "/rutine/**", "/rutineDay/**", "/muscularGroup/**")
+                        .filters(f -> f.filter(filter))
+                        .uri("lb://exercise"))
                 .build();
     }
 

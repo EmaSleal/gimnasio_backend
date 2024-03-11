@@ -31,7 +31,13 @@ public class ExerciseSpecifiedServiceImpl implements ExerciseSpecifiedService{
     @Override
     public Optional<ExerciseSpecified> save(ExerciseSpecified exerciseSpecified) {
         try {
-            return Optional.of(exerciseSpecifiedRepo.save(exerciseSpecified));
+            // Check if Exercise relationship is not null before saving
+            if (exerciseSpecified.getExercise() != null) {
+                return Optional.of(exerciseSpecifiedRepo.save(exerciseSpecified));
+            } else {
+                System.out.println("ExerciseSpecified creation failed: Exercise relationship is required.");
+                return Optional.empty();
+            }
         } catch (Exception e) {
             e.printStackTrace();
             return Optional.empty();
