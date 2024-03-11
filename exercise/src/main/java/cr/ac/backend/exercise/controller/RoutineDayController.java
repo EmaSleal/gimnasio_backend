@@ -1,7 +1,7 @@
 package cr.ac.backend.exercise.controller;
 
-import cr.ac.backend.exercise.model.RutineDay;
-import cr.ac.backend.exercise.service.RutineDayService;
+import cr.ac.backend.exercise.model.RoutineDay;
+import cr.ac.backend.exercise.service.RoutineDayService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -11,25 +11,25 @@ import java.util.List;
 @RequiredArgsConstructor
 @RestController
 @RequestMapping("/rutineDay")
-public class RutineDayController {
-    private final RutineDayService rutineDayService;
+public class RoutineDayController {
+    private final RoutineDayService rutineDayService;
 
     /*methods to read, create, edit and delete*/
 
     @GetMapping("/all")
-    public ResponseEntity<List<RutineDay>> getAll() {
+    public ResponseEntity<List<RoutineDay>> getAll() {
         var list = rutineDayService.getAll();
         return list.map(ResponseEntity::ok).orElseGet(() -> ResponseEntity.noContent().build());
     }
 
     @GetMapping("/id/{id}")
-    public ResponseEntity<RutineDay> getById(@PathVariable Long id) {
+    public ResponseEntity<RoutineDay> getById(@PathVariable Long id) {
         var rutineDay = rutineDayService.getById(id);
         return rutineDay.map(ResponseEntity::ok).orElseGet(() -> ResponseEntity.noContent().build());
     }
 
     @PostMapping("/save")
-    public ResponseEntity<RutineDay> save(@RequestBody RutineDay rutineDay) {
+    public ResponseEntity<RoutineDay> save(@RequestBody RoutineDay rutineDay) {
         var newRutineDay = rutineDayService.save(rutineDay);
         return newRutineDay.map(ResponseEntity::ok).orElseGet(() -> ResponseEntity.badRequest().build());
     }
@@ -40,7 +40,7 @@ public class RutineDayController {
     }
 
     @PutMapping("/update")
-    public ResponseEntity<RutineDay> update(@RequestBody RutineDay rutineDay) {
+    public ResponseEntity<RoutineDay> update(@RequestBody RoutineDay rutineDay) {
         var newRutineDay = rutineDayService.update(rutineDay);
         return newRutineDay.map(ResponseEntity::ok).orElseGet(() -> ResponseEntity.badRequest().build());
     }

@@ -1,8 +1,8 @@
 package cr.ac.backend.exercise.service.impl;
 
-import cr.ac.backend.exercise.model.RutineDay;
+import cr.ac.backend.exercise.model.RoutineDay;
 import cr.ac.backend.exercise.repo.RutineDayRepo;
-import cr.ac.backend.exercise.service.RutineDayService;
+import cr.ac.backend.exercise.service.RoutineDayService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -11,11 +11,11 @@ import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
-public class RutineDayServiceImpl implements RutineDayService {
+public class RoutineDayServiceImpl implements RoutineDayService {
     private final RutineDayRepo rutineDayRepo;
 
     @Override
-    public Optional<List<RutineDay>> getAll() {
+    public Optional<List<RoutineDay>> getAll() {
         var list = rutineDayRepo.findAll();
         if (list.isEmpty()) {
             return Optional.empty();
@@ -24,12 +24,12 @@ public class RutineDayServiceImpl implements RutineDayService {
     }
 
     @Override
-    public Optional<RutineDay> getById(Long id) {
+    public Optional<RoutineDay> getById(Long id) {
         return rutineDayRepo.findById(id);
     }
 
     @Override
-    public Optional<RutineDay> save(RutineDay rutineDay) {
+    public Optional<RoutineDay> save(RoutineDay rutineDay) {
         try {
             return Optional.of(rutineDayRepo.save(rutineDay));
         } catch (Exception e) {
@@ -50,7 +50,7 @@ public class RutineDayServiceImpl implements RutineDayService {
     }
 
     @Override
-    public Optional<RutineDay> update(RutineDay rutineDay) {
+    public Optional<RoutineDay> update(RoutineDay rutineDay) {
         try {
             return Optional.of(rutineDayRepo.save(rutineDay));
         } catch (Exception e) {
