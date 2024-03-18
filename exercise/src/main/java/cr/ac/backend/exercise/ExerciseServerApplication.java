@@ -9,7 +9,8 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.cloud.client.discovery.EnableDiscoveryClient;
 import org.springframework.context.annotation.Bean;
 
-import java.util.HashSet;
+import java.util.*;
+import java.util.stream.Collectors;
 
 @SpringBootApplication(
         scanBasePackages = {
@@ -284,7 +285,6 @@ public class ExerciseServerApplication {
             serviceSpecified.update(exerciseSpecified18);
             serviceSpecified.update(exerciseSpecified19);
             serviceSpecified.update(exerciseSpecified20);
-
 
         };
     }

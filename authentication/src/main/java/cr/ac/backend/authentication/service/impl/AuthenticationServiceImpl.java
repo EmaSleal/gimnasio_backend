@@ -68,8 +68,6 @@ public class AuthenticationServiceImpl implements AuthenticationService {
         } catch (Exception e) {
             return Optional.empty();
         }
-
-
     }
 
     @Override

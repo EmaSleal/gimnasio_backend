@@ -1,5 +1,6 @@
 package cr.ac.backend.exercise.service.impl;
 
+import cr.ac.backend.exercise.model.ExerciseEnums;
 import cr.ac.backend.exercise.model.RoutineDay;
 import cr.ac.backend.exercise.repo.RutineDayRepo;
 import cr.ac.backend.exercise.service.RoutineDayService;
@@ -57,5 +58,10 @@ public class RoutineDayServiceImpl implements RoutineDayService {
             e.printStackTrace();
             return Optional.empty();
         }
+    }
+
+    @Override
+    public RoutineDay findByDay(ExerciseEnums.DayOfWeek dayOfWeek) {
+        return rutineDayRepo.findByDays(dayOfWeek.toString()).orElse(null).get(0);
     }
 }

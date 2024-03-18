@@ -11,6 +11,8 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import java.security.Key;
+import java.time.Instant;
+import java.time.ZoneId;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
@@ -73,22 +75,29 @@ public class JwtService {
     }
 
     public String buidToken(Map<String,String> claims, String tokenType) {
-        long expirationTimeLong =
-        "ACCESS".equalsIgnoreCase(tokenType) ?
-             1000 * 60 * 5 :
-              1000 * 60 * 60 * 5;
-        final Date now = new Date(System.currentTimeMillis());
-        final Date expirationDate = new Date(System.currentTimeMillis() + expirationTimeLong);
+        long expirationTimeMillis =
+                "ACCESS".equalsIgnoreCase(tokenType) ?
+                        1000 * 60 * 5 : // 5 minutos para tokens de tipo ACCESS
+                        1000 * 60 * 60 * 5; // 5 horas para otros tipos de tokens
+
+        // Obtener la zona horaria del sistema
+        ZoneId zoneId = ZoneId.systemDefault();
+
+        // Calcular la fecha de expiración teniendo en cuenta la zona horaria del sistema
+        final Instant now = Instant.now();
+        final Instant expirationInstant = now.plusMillis(expirationTimeMillis);
+        final Date expirationDate = Date.from(expirationInstant.atZone(zoneId).toInstant());
 
         return Jwts
                 .builder()
                 .setClaims(claims)
                 .setSubject(claims.get("userId"))
-                .setIssuedAt(now)
+                .setIssuedAt(Date.from(now))
                 .setExpiration(expirationDate)
                 .signWith(key)
                 .compact();
     }
+
 
 
 

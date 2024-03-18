@@ -1,5 +1,6 @@
 package cr.ac.backend.exercise.service;
 
+import cr.ac.backend.exercise.model.ExerciseEnums;
 import cr.ac.backend.exercise.model.RoutineDay;
 
 import java.util.List;
@@ -17,4 +18,6 @@ public interface RoutineDayService {
     public Boolean delete(Long id);
 
     public Optional<RoutineDay> update(RoutineDay rutineDay);
+
+    public RoutineDay findByDay(ExerciseEnums.DayOfWeek dayOfWeek);
 }

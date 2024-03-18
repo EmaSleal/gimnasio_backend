@@ -9,6 +9,10 @@ spring:
 
     application:
         name: api-Gateway
+    profiles:
+      active: cors
+
+
     sleuth:
       propagation:
         type: w3c
@@ -17,12 +21,45 @@ spring:
 
     cloud:
       gateway:
+        globalcors:
+          cors-configurations:
+            '[/**]':
+              allowedOrigins:
+                - "http://localhost:4200"
+              allowedMethods:
+                - GET
+                - POST
+                - PUT
+                - DELETE
+              allowedHeaders:
+                - "Origin"
+                - "Access-Control-Allow-Origin"
+                - "Content-Type"
+                - "Accept"
+                - "Jwt-Token"
+                - "Authorization"
+                - "Origin, Accept"
+                - "X-Requested-With"
+                - "Access-Control-Request-Method"
+                - "Access-Control-Request-Headers"
+                - "Access-Control-Allow-Origin"
+                - "Access-Control-Allow-Credentials"
+                - "Filename"
+                - "AUTHORIZATION"
+              allowCredentials: true
         discovery:
           locator:
             enabled: true
     zipkin:
         base-url: http://localhost:9411
 
+web:
+  cors:
+    allowed-origins: "http://localhost:4200"
+    allowed-methods: "GET, POST, PATCH, PUT, DELETE, OPTIONS, HEAD"
+    max-age: 3600
+    allowed-headers: "Requestor-Type"
+    exposed-headers: "X-Get-Header"
 
 eureka:
   client:
