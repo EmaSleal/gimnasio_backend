@@ -40,7 +40,12 @@ public class ExerciseSpecified implements Serializable {
     @JoinColumn(name = "id_exercise", nullable = false)
     private Exercise exercise;
 
-
+    @JsonIgnoreProperties("exerciseSpecifieds")
+    @ManyToMany
+    @JoinTable(name = "exercise_routine",
+            joinColumns = @JoinColumn(name = "id_exercise"),
+            inverseJoinColumns = @JoinColumn(name = "id_routine_day"))
+    private Set<RoutineDay> routineDay = new HashSet<>(); // Changed List to Set
 
     @Override
     public String toString() {

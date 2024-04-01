@@ -30,7 +30,8 @@ public class RoutineDay implements Serializable {
 
     @JsonIgnoreProperties("routineDay")
     @ManyToMany(mappedBy = "routineDay", cascade = CascadeType.ALL)
-    private Set<Exercise> exercise = new HashSet<>(); // Changed List to Set
+    private Set<ExerciseSpecified> exerciseSpecifieds = new HashSet<>(); // Changed List to Set
+
 
 
     @JsonIgnoreProperties("routineDay")
@@ -46,7 +47,7 @@ public class RoutineDay implements Serializable {
         return "RoutineDay{" +
                 "id=" + id +
                 ", days=" + days +
-                ", exerciseSpecified=" + exercise +
+                ", exerciseSpecified=" + exerciseSpecifieds +
                 '}';
     }
 }

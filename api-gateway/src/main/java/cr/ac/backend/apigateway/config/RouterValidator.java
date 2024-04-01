@@ -21,14 +21,17 @@ public class RouterValidator {
             "/trainer/add",
             "/trainer/update",
             "/trainer/delete",
-            "/exercise/all"
+            "/exercise/all",
+            "/muscularGroup/add",
+            "/muscularGroup/all"
     );
 
     public static final List<String> clientRoutes = List.of(
             "/client/all",
             "/client/add",
             "/client/update",
-            "/client/delete"
+            "/client/delete",
+            "/muscularGroup/all"
     );
 
     public static final List<String> adminRoutes = List.of(
@@ -36,7 +39,8 @@ public class RouterValidator {
             "/admin/all",
             "/admin/add",
             "/admin/update",
-            "/admin/delete"
+            "/admin/delete",
+            "/muscularGroup/all"
 
     );
 

@@ -75,12 +75,7 @@ public class Exercise implements Serializable {
     @OneToMany(mappedBy = "exercise", cascade = CascadeType.ALL)
     private Set<ExerciseSpecified> exerciseSpecified = new HashSet<>(); // Changed List to Set
 
-    @JsonIgnoreProperties("exerciseSpecified")
-    @ManyToMany
-    @JoinTable(name = "exercise_routine",
-            joinColumns = @JoinColumn(name = "id_exercise"),
-            inverseJoinColumns = @JoinColumn(name = "id_routine_day"))
-    private Set<RoutineDay> routineDay = new HashSet<>(); // Changed List to Set
+
 
 
     @Override

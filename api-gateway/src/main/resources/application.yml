@@ -46,7 +46,7 @@ spring:
                 - "Access-Control-Allow-Credentials"
                 - "Filename"
                 - "AUTHORIZATION"
-              allowCredentials: true
+              allowCredentials: false
         discovery:
           locator:
             enabled: true

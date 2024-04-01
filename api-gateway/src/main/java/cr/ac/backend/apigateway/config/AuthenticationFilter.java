@@ -55,6 +55,7 @@ public class AuthenticationFilter implements GatewayFilter {
                 log.info("Request is authorized");
             }
         }
+        log.info("end of filter");
         return chain.filter(exchange);
     }
 
