@@ -3,9 +3,7 @@ package cr.ac.backend.exercise.model;
 public class ExerciseEnums {
 
     public enum MuscularLoad {
-        LOW,
-        MEDIUM,
-        HIGH
+        LOW, MEDIUM, HIGH
     }
 
     public enum DayOfWeek {
