@@ -20,9 +20,14 @@ public interface UserService {
 
     Optional<List<UserDto>> getUsersByTrainer(Long idTrainer);
 
-    Optional<User> getUserById(Long id);
+    Optional<UserDto> getUserById(Long id);
 
     Optional<UserDto> findByUserName(String username);
 
     Optional<UserDto> findByEmail(String email);
+
+    //delete
+    Optional<UserDto> deleteUser(Long id);
+
+    Optional<UserDto> updateUser(User userDto);
 }

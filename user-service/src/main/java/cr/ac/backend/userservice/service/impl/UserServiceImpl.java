@@ -41,17 +41,29 @@ public class UserServiceImpl implements UserService {
     @Override
     public Optional<UserDto> authenticate(UserAuth request) {
         log.info("Authenticating user {}", request);
-        var auth = userRepository.findByUserName(request.userName());
-        log.info("Authenticating user {}", auth);
+        Optional<User> auth;
+        if(request.userName() != null){
+            auth = userRepository.findByUserName(request.userName());
+        }else if (request.email() != null){
+            auth = userRepository.findByEmail(request.email());
+        }else{
+            return Optional.empty();
+        }
+        //log.info("Authenticating user {}", auth);
         if (auth.isEmpty()) {
             return Optional.empty();
         }
-        log.info("password: {}",passwordEncoder.matches(auth.get().getPassword(), auth.get().getPassword()));
+        //log.info("password: {}",passwordEncoder.matches(auth.get().getPassword(), auth.get().getPassword()));
         if (!passwordEncoder.matches(request.password(), auth.get().getPassword())) {
             return Optional.empty();
         }
-        var user = userRepository.findByUserName(request.userName())
-                .orElseThrow();
+
+        User user;
+        if(request.userName() != null){
+            user = userRepository.findByUserName(request.userName()).get();
+        }else {
+            user = userRepository.findByEmail(request.email()).get();
+        }
 
         return Optional.of(new UserDto(user.getId(), user.getUsername(), user.getEmail(), user.getRole(), user.isEnabled(), user.isAccountNonExpired(), user.isCredentialsNonExpired(), user.isAccountNonLocked(), null));
     }
@@ -72,8 +84,9 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public Optional<User> getUserById(Long id) {
-        return userRepository.findById(id);
+    public Optional<UserDto> getUserById(Long id) {
+        var user = userRepository.findById(id);
+        return user.map(value -> new UserDto(value.getId(), value.getUsername(), value.getEmail(), value.getRole(), value.isEnabled(), value.isAccountNonExpired(), value.isCredentialsNonExpired(), value.isAccountNonLocked(), null));
     }
 
     @Override
@@ -86,5 +99,35 @@ public class UserServiceImpl implements UserService {
     public Optional<UserDto> findByEmail(String email) {
         var user = userRepository.findByEmail(email);
         return user.map(value -> new UserDto(value.getId(), value.getUsername(), value.getEmail(), value.getRole(), value.isEnabled(), value.isAccountNonExpired(), value.isCredentialsNonExpired(), value.isAccountNonLocked(), null));
+    }
+
+    @Override
+    public Optional<UserDto> deleteUser(Long id) {
+        var user = userRepository.findById(id);
+        if (user.isEmpty()) {
+            return Optional.empty();
+        }
+        userRepository.deleteById(id);
+        return user.map(value -> new UserDto(value.getId(), value.getUsername(), value.getEmail(), value.getRole(), value.isEnabled(), value.isAccountNonExpired(), value.isCredentialsNonExpired(), value.isAccountNonLocked(), null));
+    }
+
+    @Override
+    public Optional<UserDto> updateUser(User userDto) {
+        var user = userRepository.findById(userDto.getId());
+        if (user.isEmpty()) {
+            return Optional.empty();
+        }
+        var userSecurity = User.builder()
+                .id(userDto.getId())
+                .userName(userDto.getUsername())
+                .email(userDto.getEmail())
+                .role(userDto.getRole())
+                .enabled(userDto.isEnabled())
+                .accountNonExpired(userDto.isAccountNonExpired())
+                .credentialsNonExpired(userDto.isCredentialsNonExpired())
+                .accountNonLocked(userDto.isAccountNonLocked())
+                .build();
+        userRepository.save(userSecurity);
+        return Optional.of(new UserDto(userSecurity.getId(), userSecurity.getUsername(), userSecurity.getEmail(), userSecurity.getRole(), userSecurity.isEnabled(), userSecurity.isAccountNonExpired(), userSecurity.isCredentialsNonExpired(), userSecurity.isAccountNonLocked(), null));
     }
 }

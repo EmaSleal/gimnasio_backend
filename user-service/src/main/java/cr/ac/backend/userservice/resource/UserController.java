@@ -33,7 +33,7 @@ public class UserController {
         return users.map(ResponseEntity::ok).orElseGet(() -> ResponseEntity.notFound().build());
     }
 
-    @PostMapping("/register")
+    @PostMapping("/save")
     public ResponseEntity<UserDto> register(@RequestBody User request) {
         var userLogin = service.register(request);
         UserDto userDto = UserDto.builder()
@@ -44,9 +44,9 @@ public class UserController {
         return ResponseEntity.ok(userDto);
     }
 
-    @GetMapping("/id")
-    public ResponseEntity<User> getUserById(@PathVariable Long id) {
-        Optional<User> user = service.getUserById(id);
+    @GetMapping("/id/{id}")
+    public ResponseEntity<UserDto> getUserById(@PathVariable Long id) {
+        Optional<UserDto> user = service.getUserById(id);
         return user.map(ResponseEntity::ok).orElseGet(() -> ResponseEntity.notFound().build());
     }
 
@@ -66,6 +66,18 @@ public class UserController {
     @GetMapping("/findByEmail/{email}")
     public ResponseEntity<UserDto> findByEmail(@PathVariable String email) {
         Optional<UserDto> user = service.findByEmail(email);
+        return user.map(ResponseEntity::ok).orElseGet(() -> ResponseEntity.notFound().build());
+    }
+
+    @DeleteMapping("/delete/{id}")
+    public ResponseEntity<Void> deleteUser(@PathVariable Long id) {
+        service.deleteUser(id);
+        return ResponseEntity.ok().build();
+    }
+
+    @PutMapping("/update")
+    public ResponseEntity<UserDto> updateUser(@RequestBody User userDto) {
+        Optional<UserDto> user = service.updateUser(userDto);
         return user.map(ResponseEntity::ok).orElseGet(() -> ResponseEntity.notFound().build());
     }
 }
