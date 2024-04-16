@@ -64,7 +64,7 @@ public class Exercise implements Serializable {
 
     @ManyToOne
     @JsonIgnoreProperties("exercises")
-    @JoinColumn(name = "muscular_groups", nullable = false)
+    @JoinColumn(name = "muscular_group", nullable = false)
     private MuscularGroup muscularGroup;
 
     @Column(name = "muscular_load", nullable = false)

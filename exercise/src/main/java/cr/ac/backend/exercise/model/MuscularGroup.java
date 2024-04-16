@@ -26,7 +26,7 @@ public class MuscularGroup implements Serializable{
     @Column(name = "name")
     private String name;
 
-    @JsonIgnoreProperties("muscularGroups")
+    @JsonIgnoreProperties("muscularGroup")
     @OneToMany(mappedBy = "muscularGroup", cascade = CascadeType.ALL)
     private Set<Exercise> exercises = new HashSet<>();
 
