@@ -1,5 +1,6 @@
 package cr.ac.backend.userservice.model;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -49,8 +50,19 @@ public class User implements Serializable {
     @Column(name = "account_non_locked", nullable = false)
     private boolean accountNonLocked;
 
-    @Column(name = "id_trainer", nullable = true)
-    private Long idTrainer;
+    @Column(name = "created_by", nullable = true)
+    private Long createdBy;
+
+    //created_at trigger that is set when the workout is created
+    @JsonFormat(pattern = "yyyy-MM-dd:HH:mm:ss")
+    @Column(name = "created_at", nullable = true)
+    private String createdAt;
+
+    //updated_at trigger that is set when the workout is updated
+    @JsonFormat(pattern = "yyyy-MM-dd:HH:mm:ss")
+    @Column(name = "updated_at", nullable = true)
+    private String updatedAt;
+
 
 
     public Collection<String> getAuthorities() {

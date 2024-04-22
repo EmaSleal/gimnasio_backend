@@ -26,7 +26,7 @@ public class UserServiceApplication {
     @Bean
     CommandLineRunner run(UserService service) {
         return args -> {
-            service.register(new User(null,"sotoleal","sotoleal123","manusl2908@gmail.com", User.Rol.ADMIN,true,true,true,true,null));
+            service.register(new User(null,"sotoleal","sotoleal123","manusl2908@gmail.com", User.Rol.ADMIN,true,true,true,true,null,null,null));
         };
     }
 

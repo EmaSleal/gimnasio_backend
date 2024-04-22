@@ -23,7 +23,9 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public User register(User request) {
-        log.info("Registering user {}", request);
+        //log.info("Registering user {}", request);
+        //get the current date of the system with format "yyyy-MM-dd:HH:mm:ss"
+        var currentDate = new java.sql.Timestamp(System.currentTimeMillis());
         var userSecurity = User.builder()
                 .userName(request.getUsername())
                 .password(passwordEncoder.encode(request.getPassword()))
@@ -33,6 +35,9 @@ public class UserServiceImpl implements UserService {
                 .accountNonExpired(true)
                 .credentialsNonExpired(true)
                 .accountNonLocked(true)
+                .createdBy(request.getCreatedBy())
+                .createdAt(currentDate.toString())
+                .updatedAt(currentDate.toString())
                 .build();
         userRepository.save(userSecurity);
         return userSecurity;
@@ -40,7 +45,7 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public Optional<UserDto> authenticate(UserAuth request) {
-        log.info("Authenticating user {}", request);
+        //log.info("Authenticating user {}", request);
         Optional<User> auth;
         if(request.userName() != null){
             auth = userRepository.findByUserName(request.userName());
@@ -78,8 +83,8 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public Optional<List<UserDto>> getUsersByTrainer(Long idTrainer) {
-        Optional<List<User>> list = userRepository.findByIdTrainer(idTrainer);
+    public Optional<List<UserDto>> getUsersByCreatedBy(Long idTrainer) {
+        Optional<List<User>> list = userRepository.findByCreatedBy(idTrainer);
         return list.map(users -> users.stream().map(user -> new UserDto(user.getId(), user.getUsername(), user.getEmail(), user.getRole(), user.isEnabled(), user.isAccountNonExpired(), user.isCredentialsNonExpired(), user.isAccountNonLocked(), null)).toList());
     }
 
@@ -117,6 +122,8 @@ public class UserServiceImpl implements UserService {
         if (user.isEmpty()) {
             return Optional.empty();
         }
+        //get the current date of the system with format "yyyy-MM-dd:HH:mm:ss"
+        var currentDate = new java.sql.Timestamp(System.currentTimeMillis());
         var userSecurity = User.builder()
                 .id(userDto.getId())
                 .userName(userDto.getUsername())
@@ -126,6 +133,9 @@ public class UserServiceImpl implements UserService {
                 .accountNonExpired(userDto.isAccountNonExpired())
                 .credentialsNonExpired(userDto.isCredentialsNonExpired())
                 .accountNonLocked(userDto.isAccountNonLocked())
+                .createdBy(userDto.getCreatedBy())
+                .createdAt(userDto.getCreatedAt())
+                .updatedAt(currentDate.toString())
                 .build();
         userRepository.save(userSecurity);
         return Optional.of(new UserDto(userSecurity.getId(), userSecurity.getUsername(), userSecurity.getEmail(), userSecurity.getRole(), userSecurity.isEnabled(), userSecurity.isAccountNonExpired(), userSecurity.isCredentialsNonExpired(), userSecurity.isAccountNonLocked(), null));

@@ -28,7 +28,7 @@ public class MuscularGroup implements Serializable{
 
     @JsonIgnoreProperties("muscularGroup")
     @OneToMany(mappedBy = "muscularGroup", cascade = CascadeType.ALL)
-    private Set<Exercise> exercises = new HashSet<>();
+    private Set<Workout> workouts = new HashSet<>();
 
 
 }

@@ -1,8 +1,8 @@
 package cr.ac.backend.exercise.service.impl;
 
-import cr.ac.backend.exercise.model.Exercise;
-import cr.ac.backend.exercise.repo.ExerciseRepo;
-import cr.ac.backend.exercise.service.ExerciseService;
+import cr.ac.backend.exercise.model.Workout;
+import cr.ac.backend.exercise.repo.WorkoutRepo;
+import cr.ac.backend.exercise.service.WorkoutService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -11,14 +11,14 @@ import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
-public class ExerciseServiceImpl implements ExerciseService {
+public class WorkoutServiceImpl implements WorkoutService {
 
-    private final ExerciseRepo exerciseRepo;
+    private final WorkoutRepo workoutRepo;
 
 
     @Override
-    public Optional<List<Exercise>> getAll() {
-        var list = exerciseRepo.findAll();
+    public Optional<List<Workout>> getAll() {
+        var list = workoutRepo.findAll();
         if (list.isEmpty()) {
             return Optional.empty();
         }
@@ -26,14 +26,14 @@ public class ExerciseServiceImpl implements ExerciseService {
     }
 
     @Override
-    public Optional<Exercise> getById(Long id) {
-        return exerciseRepo.findById(id);
+    public Optional<Workout> getById(Long id) {
+        return workoutRepo.findById(id);
     }
 
     @Override
-    public Optional<Exercise> save(Exercise exercise) {
+    public Optional<Workout> save(Workout workout) {
         try {
-            return Optional.of(exerciseRepo.save(exercise));
+            return Optional.of(workoutRepo.save(workout));
         } catch (Exception e) {
             e.printStackTrace();
             return Optional.empty();
@@ -44,7 +44,7 @@ public class ExerciseServiceImpl implements ExerciseService {
     @Override
     public Boolean delete(Long id) {
         try {
-            exerciseRepo.deleteById(id);
+            workoutRepo.deleteById(id);
             return true;
         } catch (Exception e) {
             e.printStackTrace();
@@ -53,9 +53,9 @@ public class ExerciseServiceImpl implements ExerciseService {
     }
 
     @Override
-    public Optional<Exercise> update(Exercise exercise) {
+    public Optional<Workout> update(Workout workout) {
         try {
-            return Optional.of(exerciseRepo.save(exercise));
+            return Optional.of(workoutRepo.save(workout));
         } catch (Exception e) {
             e.printStackTrace();
             return Optional.empty();

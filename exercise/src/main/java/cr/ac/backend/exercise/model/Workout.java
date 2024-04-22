@@ -1,11 +1,9 @@
-
-
 /*
-ID de Exercise:
+ID de Workout:
 
 Tipo: Número entero.
 Descripción: Identificador único para cada ejercicio.
-Nombre del Exercise:
+Nombre del Workout:
 
 Tipo: Cadena de texto.
 Descripción: Nombre descriptivo del ejercicio.
@@ -49,21 +47,21 @@ import java.util.Set; // Added import for Set
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-@Table(name = "exercise")
-public class Exercise implements Serializable {
+@Table(name = "workout")
+public class Workout implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "id_exercise", nullable = false)
+    @Column(name = "id_workout", nullable = false)
     private Long id;
 
     @Column(name = "name", nullable = false)
     private String name;
 
     @ManyToOne
-    @JsonIgnoreProperties("exercises")
+    @JsonIgnoreProperties("workouts")
     @JoinColumn(name = "muscular_group", nullable = false)
     private MuscularGroup muscularGroup;
 
@@ -71,21 +69,21 @@ public class Exercise implements Serializable {
     @Enumerated(EnumType.STRING)
     private ExerciseEnums.MuscularLoad muscularLoad;
 
-    @JsonIgnoreProperties("exercise")
-    @OneToMany(mappedBy = "exercise", cascade = CascadeType.ALL)
-    private Set<ExerciseSpecified> exerciseSpecified = new HashSet<>(); // Changed List to Set
+    @JsonIgnoreProperties("workout")
+    @OneToMany(mappedBy = "workout", cascade = CascadeType.PERSIST)
+    private Set<WorkoutSpecification> WorkoutSpecification = new HashSet<>();
 
 
 
 
     @Override
     public String toString() {
-        return "Exercise{" +
+        return "Workout{" +
                 "id=" + id +
                 ", name='" + name + '\'' +
                 ", muscularGroup='" + muscularGroup + '\'' +
-                ", muscularLoad=" + (muscularLoad != null ? muscularLoad.toString() : "null") + // Handle potential null value
-                ", exerciseSpecified=" + exerciseSpecified +
+                ", muscularLoad=" + (muscularLoad != null ? muscularLoad.toString() : "null") +
+                ", workoutSpecified=" + WorkoutSpecification +
                 '}';
     }
 }

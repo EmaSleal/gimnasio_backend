@@ -13,15 +13,20 @@ import java.util.Set; // Added import for Set
 @NoArgsConstructor
 @Getter
 @Setter
-@Table(name = "exercise_specified")
-public class ExerciseSpecified implements Serializable {
+@Builder
+@Table(name = "workout_specification")
+public class WorkoutSpecification implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "id_exercise_specified", nullable = false)
+    @Column(name = "id_workout_specification", nullable = false)
     private Long id;
+
+    //description
+    @Column(name = "description", nullable = true)
+    private String description;
 
     @Column(name = "reps_number", nullable = false)
     private int repsNumber;
@@ -35,27 +40,27 @@ public class ExerciseSpecified implements Serializable {
     @Column(name = "trainer_rating", nullable = false)
     private double trainerRating;
 
-    @JsonIgnoreProperties("exerciseSpecified")
+    @JsonIgnoreProperties("workoutSpecification")
     @ManyToOne
-    @JoinColumn(name = "id_exercise", nullable = false)
-    private Exercise exercise;
+    @JoinColumn(name = "id_workout", nullable = false)
+    private Workout workout;
 
-    @JsonIgnoreProperties("exerciseSpecifieds")
+    @JsonIgnoreProperties("workoutSpecification")
     @ManyToMany
-    @JoinTable(name = "exercise_routine",
-            joinColumns = @JoinColumn(name = "id_exercise"),
-            inverseJoinColumns = @JoinColumn(name = "id_routine_day"))
-    private Set<RoutineDay> routineDay = new HashSet<>(); // Changed List to Set
+    @JoinTable(name = "workout_specification_daily_routine",
+            joinColumns = @JoinColumn(name = "id_workout_specification"),
+            inverseJoinColumns = @JoinColumn(name = "id_daily_routine"))
+    private Set<DailyRoutine> dailyRoutine = new HashSet<>(); // Changed List to Set
 
     @Override
     public String toString() {
-        return "ExerciseSpecified{" +
+        return "WorkoutSpecification{" +
                 "id=" + id +
                 ", repsNumber=" + repsNumber +
                 ", setsNumber=" + setsNumber +
                 ", recommendedWeight=" + recommendedWeight +
                 ", trainerRating=" + trainerRating +
-                ", exercise=" + (exercise != null ? exercise.getId() : "null") + // Handle potential null value
+                ", exercise=" + (workout != null ? workout.getId() : "null") + // Handle potential null value
                 '}';
     }
 }

@@ -27,9 +27,9 @@ public class UserController {
         return users.map(ResponseEntity::ok).orElseGet(() -> ResponseEntity.notFound().build());
     }
 
-    @GetMapping("/allByTrainer/{idTrainer}")
+    @GetMapping("/createdBy/{idTrainer}")
     public ResponseEntity<List<UserDto>> getUsersByIdTrainer(@PathVariable Long idTrainer) {
-        Optional<List<UserDto>> users = service.getUsersByTrainer(idTrainer);
+        Optional<List<UserDto>> users = service.getUsersByCreatedBy(idTrainer);
         return users.map(ResponseEntity::ok).orElseGet(() -> ResponseEntity.notFound().build());
     }
 

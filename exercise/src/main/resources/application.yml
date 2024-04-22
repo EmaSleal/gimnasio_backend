@@ -7,7 +7,7 @@ server:
   port: 8586
 spring:
   application:
-    name: exercise
+    name: workout-service
   sleuth:
     propagation:
       type: w3c

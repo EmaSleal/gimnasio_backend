@@ -18,7 +18,7 @@ public interface UserService {
 
     Optional<List<UserDto>> getUsers();
 
-    Optional<List<UserDto>> getUsersByTrainer(Long idTrainer);
+    Optional<List<UserDto>> getUsersByCreatedBy(Long id);
 
     Optional<UserDto> getUserById(Long id);
 
