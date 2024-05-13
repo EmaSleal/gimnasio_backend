@@ -1,6 +1,8 @@
 package cr.ac.backend.exercise.service.impl;
 
+import cr.ac.backend.exercise.model.MuscularGroupDto;
 import cr.ac.backend.exercise.model.Workout;
+import cr.ac.backend.exercise.model.WorkoutDto;
 import cr.ac.backend.exercise.repo.WorkoutRepo;
 import cr.ac.backend.exercise.service.WorkoutService;
 import lombok.RequiredArgsConstructor;
@@ -17,28 +19,42 @@ public class WorkoutServiceImpl implements WorkoutService {
 
 
     @Override
-    public Optional<List<Workout>> getAll() {
+    public Optional<List<WorkoutDto>> getAll() {
         var list = workoutRepo.findAll();
         if (list.isEmpty()) {
             return Optional.empty();
         }
-        return Optional.of(list);
+        return Optional.of(list.stream().map(workout -> WorkoutDto.builder()
+                .id(workout.getId())
+                .name(workout.getName())
+                .muscularGroup(MuscularGroupDto.builder().name(workout.getMuscularGroup().getName()).id(workout.getMuscularGroup().getId()).build())
+                .muscularLoad(workout.getMuscularLoad())
+                .build()).toList());
     }
 
     @Override
-    public Optional<Workout> getById(Long id) {
-        return workoutRepo.findById(id);
+    public Optional<WorkoutDto> getById(Long id) {
+        var workout = workoutRepo.findById(id);
+        if (workout.isEmpty()) {
+            return Optional.empty();
+        }
+        return Optional.of(WorkoutDto.builder()
+                .id(workout.get().getId())
+                .name(workout.get().getName())
+                .muscularGroup(MuscularGroupDto.builder().name(workout.get().getMuscularGroup().getName()).id(workout.get().getMuscularGroup().getId()).build())
+                .muscularLoad(workout.get().getMuscularLoad())
+                .build());
     }
 
     @Override
     public Optional<Workout> save(Workout workout) {
         try {
-            return Optional.of(workoutRepo.save(workout));
+            var saved = workoutRepo.save(workout);
+            return Optional.of(saved);
         } catch (Exception e) {
             e.printStackTrace();
             return Optional.empty();
         }
-
     }
 
     @Override
@@ -53,9 +69,15 @@ public class WorkoutServiceImpl implements WorkoutService {
     }
 
     @Override
-    public Optional<Workout> update(Workout workout) {
+    public Optional<WorkoutDto> update(Workout workout) {
         try {
-            return Optional.of(workoutRepo.save(workout));
+            var updated = workoutRepo.save(workout);
+            return Optional.of(WorkoutDto.builder()
+                    .id(updated.getId())
+                    .name(updated.getName())
+                    .muscularGroup(MuscularGroupDto.builder().name(updated.getMuscularGroup().getName()).id(updated.getMuscularGroup().getId()).build())
+                    .muscularLoad(updated.getMuscularLoad())
+                    .build());
         } catch (Exception e) {
             e.printStackTrace();
             return Optional.empty();

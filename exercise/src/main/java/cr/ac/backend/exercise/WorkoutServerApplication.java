@@ -82,28 +82,28 @@ public class WorkoutServerApplication {
 
             var exercisesSpecified = new ArrayList<WorkoutSpecification>();
 
-            exercisesSpecified.add( new WorkoutSpecification(null,"", 12, 4, 25, 8, exercises.get(0), new HashSet<>()));
-            exercisesSpecified.add( new WorkoutSpecification(null, "",5, 4, 100, 7, exercises.get(1), new HashSet<>()));
-            exercisesSpecified.add( new WorkoutSpecification(null, "",3, 4, 25, 8, exercises.get(2), new HashSet<>()));
-            exercisesSpecified.add( new WorkoutSpecification(null, "",12, 3, 5, 9, exercises.get(3), new HashSet<>()));
-            exercisesSpecified.add( new WorkoutSpecification(null, "",10, 3, 32, 10, exercises.get(4), new HashSet<>()));
-            exercisesSpecified.add( new WorkoutSpecification(null, "",6, 3, 22, 10, exercises.get(5), new HashSet<>()));
-            exercisesSpecified.add( new WorkoutSpecification(null, "",12, 4, 25, 8, exercises.get(6), new HashSet<>()));
-            exercisesSpecified.add( new WorkoutSpecification(null, "",3, 4, 25, 8, exercises.get(7), new HashSet<>()));
-            exercisesSpecified.add( new WorkoutSpecification(null, "",10, 3, 80, 10, exercises.get(8), new HashSet<>()));
-            exercisesSpecified.add( new WorkoutSpecification(null, "",6, 3, 15, 10, exercises.get(9), new HashSet<>()));
-            exercisesSpecified.add( new WorkoutSpecification(null, "",12, 3, 5, 9, exercises.get(10), new HashSet<>()));
-            exercisesSpecified.add( new WorkoutSpecification(null, "",10, 3, 32, 10, exercises.get(11), new HashSet<>()));
-            exercisesSpecified.add( new WorkoutSpecification(null, "",6, 3, 22, 10, exercises.get(12), new HashSet<>()));
-            exercisesSpecified.add( new WorkoutSpecification(null, "",12, 4, 25, 8, exercises.get(13), new HashSet<>()));
-            exercisesSpecified.add( new WorkoutSpecification(null, "",3, 4, 25, 8, exercises.get(14), new HashSet<>()));
-            exercisesSpecified.add( new WorkoutSpecification(null, "",10, 3, 80, 10, exercises.get(15), new HashSet<>()));
-            exercisesSpecified.add( new WorkoutSpecification(null, "",6, 3, 15, 10, exercises.get(16), new HashSet<>()));
-            exercisesSpecified.add( new WorkoutSpecification(null, "",12, 3, 5, 9, exercises.get(17), new HashSet<>()));
-            exercisesSpecified.add( new WorkoutSpecification(null, "",10, 3, 32, 10, exercises.get(18), new HashSet<>()));
-            exercisesSpecified.add( new WorkoutSpecification(null, "",6, 3, 22, 10, exercises.get(19), new HashSet<>()));
+            exercisesSpecified.add( new WorkoutSpecification(null,"", 12, 4, 25, 8,false,0, exercises.get(0), new HashSet<>()));
+            exercisesSpecified.add( new WorkoutSpecification(null, "",5, 4, 100, 7, false,0, exercises.get(1), new HashSet<>()));
+            exercisesSpecified.add( new WorkoutSpecification(null, "",3, 4, 25, 8, false,0, exercises.get(2), new HashSet<>()));
+            exercisesSpecified.add( new WorkoutSpecification(null, "",12, 3, 5, 9, false,0, exercises.get(3), new HashSet<>()));
+            exercisesSpecified.add( new WorkoutSpecification(null, "",10, 3, 32, 10, false,0, exercises.get(4), new HashSet<>()));
+            exercisesSpecified.add( new WorkoutSpecification(null, "",6, 3, 22, 10, false,0, exercises.get(5), new HashSet<>()));
+            exercisesSpecified.add( new WorkoutSpecification(null, "",12, 4, 25, 8, false,0, exercises.get(6), new HashSet<>()));
+            exercisesSpecified.add( new WorkoutSpecification(null, "",3, 4, 25, 8, false,0, exercises.get(7), new HashSet<>()));
+            exercisesSpecified.add( new WorkoutSpecification(null, "",10, 3, 80, 10, false,0, exercises.get(8), new HashSet<>()));
+            exercisesSpecified.add( new WorkoutSpecification(null, "",6, 3, 15, 10, false,0, exercises.get(9), new HashSet<>()));
+            exercisesSpecified.add( new WorkoutSpecification(null, "",12, 3, 5, 9, false,0, exercises.get(10), new HashSet<>()));
+            exercisesSpecified.add( new WorkoutSpecification(null, "",10, 3, 32, 10, false,0, exercises.get(11), new HashSet<>()));
+            exercisesSpecified.add( new WorkoutSpecification(null, "",6, 3, 22, 10, false,0, exercises.get(12), new HashSet<>()));
+            exercisesSpecified.add( new WorkoutSpecification(null, "",12, 4, 25, 8, false,0, exercises.get(13), new HashSet<>()));
+            exercisesSpecified.add( new WorkoutSpecification(null, "",0, 4, 25, 8, true, 60, exercises.get(14), new HashSet<>()));
+            exercisesSpecified.add( new WorkoutSpecification(null, "",10, 3, 80, 10, false,0, exercises.get(15),  new HashSet<>()));
+            exercisesSpecified.add( new WorkoutSpecification(null, "",0, 3, 15, 10, true, 120, exercises.get(16),  new HashSet<>()));
+            exercisesSpecified.add( new WorkoutSpecification(null, "",12, 3, 5, 9, false,0, exercises.get(17), new HashSet<>()));
+            exercisesSpecified.add( new WorkoutSpecification(null, "",0, 3, 32, 10, true, 40, exercises.get(18), new HashSet<>()));
+            exercisesSpecified.add( new WorkoutSpecification(null, "",6, 3, 22, 10, false,0, exercises.get(19), new HashSet<>()));
 
-            var routineDay = new DailyRoutine(null,new HashSet<>(), new HashSet<>(), new HashSet<>());
+                    var routineDay = new DailyRoutine(null,new HashSet<>(), new HashSet<>(), new HashSet<>());
             routineDay.getDays().add(ExerciseEnums.DayOfWeek.MONDAY);
             routineDay.getDays().add(ExerciseEnums.DayOfWeek.WEDNESDAY);
 
@@ -139,7 +139,8 @@ public class WorkoutServerApplication {
 
 
             for (int i = 0; i < exercises.size(); i++) {
-                var exercise = exercises.get(i);
+                Workout exercise = exercises.get(i);
+
                 exercises.set(i, service.save(exercise).get());
             }
 
@@ -187,7 +188,13 @@ public class WorkoutServerApplication {
         for (int i = number1; i < number2; i++) {
             var exercise = exercises.get(i);
             exercises.remove(i);
-            exercises.add(i, service.update(exercise).get());
+            var saved = service.save(exercise).get();
+            exercises.add(i, Workout.builder()
+                    .id(saved.getId())
+                    .name(saved.getName())
+                    .muscularGroup(saved.getMuscularGroup())
+                    .muscularLoad(saved.getMuscularLoad())
+                    .build());
 
         }
 

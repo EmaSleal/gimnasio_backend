@@ -47,6 +47,7 @@ import java.util.Set; // Added import for Set
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
+@Builder
 @Table(name = "workout")
 public class Workout implements Serializable {
 

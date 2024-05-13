@@ -1,6 +1,7 @@
 package cr.ac.backend.exercise.controller;
 
 import cr.ac.backend.exercise.model.Workout;
+import cr.ac.backend.exercise.model.WorkoutDto;
 import cr.ac.backend.exercise.service.WorkoutService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -18,13 +19,13 @@ public class WorkoutController {
 
 
     @GetMapping("/all")
-    public ResponseEntity<List<Workout>> getAll() {
+    public ResponseEntity<List<WorkoutDto>> getAll() {
         var list = workoutService.getAll();
         return list.map(ResponseEntity::ok).orElseGet(() -> ResponseEntity.noContent().build());
     }
 
     @GetMapping("/id/{id}")
-    public ResponseEntity<Workout> getById(@PathVariable Long id) {
+    public ResponseEntity<WorkoutDto> getById(@PathVariable Long id) {
         var workout = workoutService.getById(id);
         return workout.map(ResponseEntity::ok).orElseGet(() -> ResponseEntity.noContent().build());
     }
@@ -41,7 +42,7 @@ public class WorkoutController {
     }
 
     @PutMapping("/update")
-    public ResponseEntity<Workout> update(@RequestBody Workout workout) {
+    public ResponseEntity<WorkoutDto> update(@RequestBody Workout workout) {
         var newWorkout = workoutService.update(workout);
         return newWorkout.map(ResponseEntity::ok).orElseGet(() -> ResponseEntity.badRequest().build());
     }

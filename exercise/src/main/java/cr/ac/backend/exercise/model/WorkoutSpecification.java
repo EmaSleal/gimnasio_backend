@@ -28,7 +28,7 @@ public class WorkoutSpecification implements Serializable {
     @Column(name = "description", nullable = true)
     private String description;
 
-    @Column(name = "reps_number", nullable = false)
+    @Column(name = "reps_number", nullable = true)
     private int repsNumber;
 
     @Column(name = "sets_number", nullable = false)
@@ -39,6 +39,14 @@ public class WorkoutSpecification implements Serializable {
 
     @Column(name = "trainer_rating", nullable = false)
     private double trainerRating;
+
+    //isTimeBased
+    @Column(name = "is_time_based", nullable = false)
+    private boolean isTimeBased;
+
+    //time
+    @Column(name = "time", nullable = true)
+    private int time;
 
     @JsonIgnoreProperties("workoutSpecification")
     @ManyToOne

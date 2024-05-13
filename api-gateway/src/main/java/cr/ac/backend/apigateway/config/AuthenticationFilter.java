@@ -28,12 +28,14 @@ public class AuthenticationFilter implements GatewayFilter {
     @Override
     public Mono<Void> filter(ServerWebExchange exchange, GatewayFilterChain chain) {
         ServerHttpRequest request =  exchange.getRequest();
-        log.info("Request path: {}", request.getPath());
+        //log.info("Request path: {}", request.getPath());
 
 
         if (routerValidator.isSecured.test(request)) {
             log.info("request is secure");
-            if (authMissing(request)) {
+
+            if (!authMissing(request)) {
+                log.info("Authorization header is missing");
                 return onError(exchange,  HttpStatus.UNAUTHORIZED);
             }
             String token = request.getHeaders().getOrEmpty("Authorization").get(0).split(" ")[1];
@@ -44,7 +46,7 @@ public class AuthenticationFilter implements GatewayFilter {
             }
 
             String role = jwtUtils.extractRole(token);
-
+            log.info("Role: {}", role);
             if (routerValidator.isTrainer.test(request) && (!role.equals("TRAINER") && !role.equals("ADMIN"))) {
                 return onError(exchange, HttpStatus.UNAUTHORIZED);
             }else if (routerValidator.isClient.test(request) && (!role.equals("CLIENT") && !role.equals("ADMIN")) && !role.equals("TRAINER")) {
@@ -68,7 +70,8 @@ public class AuthenticationFilter implements GatewayFilter {
 
 
     private boolean authMissing(ServerHttpRequest request) {
-        return !request.getHeaders().containsKey("Authorization");
+        log.info("Authorization: {}", request.getHeaders().containsKey("Authorization"));
+        return request.getHeaders().containsKey("Authorization");
     }
 
 
