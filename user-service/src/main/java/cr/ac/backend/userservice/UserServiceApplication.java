@@ -27,6 +27,7 @@ public class UserServiceApplication {
     CommandLineRunner run(UserService service) {
         return args -> {
             service.register(new User(null,"sotoleal","sotoleal123","manusl2908@gmail.com", User.Rol.ADMIN,true,true,true,true,null,null,null));
+            service.register(new User(null,"sotoleal123","sotoleal123","manusl29@gmail.com", User.Rol.ADMIN,true,true,true,true,1L,null,null));
         };
     }
 

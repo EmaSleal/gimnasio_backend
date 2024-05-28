@@ -11,5 +11,5 @@ public interface WorkoutPlanRepo extends JpaRepository<WorkoutPlan, Long> {
 
     public List<WorkoutPlan> findByIdUser(Long id);
 
-
+    public List<WorkoutPlan> findByIsTemplate(Boolean isTemplate);
 }

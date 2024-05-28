@@ -50,7 +50,8 @@ public class RouterValidator {
             "/workoutPlan/id",
             "/workoutPlan/save",
             "/workoutPlan/update",
-            "/workoutPlan/delete"
+            "/workoutPlan/delete",
+            "/workoutPlan/getTemplates"
     );
 
     public static final List<String> clientRoutes = List.of(
@@ -94,7 +95,8 @@ public class RouterValidator {
             "/workoutPlan/id",
             "/workoutPlan/save",
             "/workoutPlan/update",
-            "/workoutPlan/delete"
+            "/workoutPlan/delete",
+            "/workoutPlan/getTemplates"
 
     );
 

@@ -42,4 +42,10 @@ public class WorkoutPlanController {
         var newWorkout = workoutPlanService.update(workoutPlan);
         return newWorkout.map(ResponseEntity::ok).orElseGet(() -> ResponseEntity.badRequest().build());
     }
+
+    @GetMapping("/getTemplates")
+    public ResponseEntity<List<WorkoutPlan>> getTemplates(){
+        var list = workoutPlanService.getTempletes();
+        return list.map(ResponseEntity::ok).orElseGet(() -> ResponseEntity.noContent().build());
+    }
 }

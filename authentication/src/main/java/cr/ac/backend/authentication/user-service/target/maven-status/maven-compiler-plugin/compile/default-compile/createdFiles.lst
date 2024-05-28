@@ -1,0 +1,13 @@
+cr\ac\backend\userservice\model\AuthenticationResponse.class
+cr\ac\backend\userservice\service\impl\UserServiceImpl.class
+cr\ac\backend\userservice\model\UserAuth.class
+cr\ac\backend\userservice\model\UserDto.class
+cr\ac\backend\userservice\resource\UserController.class
+cr\ac\backend\userservice\service\UserService.class
+cr\ac\backend\userservice\model\UserDto$UserDtoBuilder.class
+cr\ac\backend\userservice\repo\UserRepository.class
+cr\ac\backend\userservice\model\User$UserBuilder.class
+cr\ac\backend\userservice\model\User.class
+cr\ac\backend\userservice\model\User$Rol.class
+cr\ac\backend\userservice\UserServiceApplication.class
+cr\ac\backend\userservice\model\AuthenticationResponse$AuthenticationResponseBuilder.class

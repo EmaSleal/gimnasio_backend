@@ -53,4 +53,13 @@ public class WorkoutPlanServiceImpl implements WorkoutPlanService {
         workoutPlan.setUpdatedAt(currentDate.toString());
         return Optional.of(workoutPlanRepo.save(workoutPlan));
     }
+
+    @Override
+    public Optional<List<WorkoutPlan>> getTempletes() {
+        var list = workoutPlanRepo.findByIsTemplate(true);
+        if (list.isEmpty()) {
+            return Optional.empty();
+        }
+        return Optional.of(list);
+    }
 }

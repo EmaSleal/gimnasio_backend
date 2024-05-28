@@ -20,4 +20,5 @@ public interface WorkoutPlanService {
 
     public Optional<WorkoutPlan> update(WorkoutPlan workoutPlan);
 
+    public Optional<List<WorkoutPlan>> getTempletes();
 }
