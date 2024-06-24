@@ -6,7 +6,7 @@ import cr.ac.backend.userservice.model.UserAuth;
 import cr.ac.backend.userservice.model.UserDto;
 import cr.ac.backend.userservice.service.UserService;
 import lombok.AllArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
+// import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -16,7 +16,7 @@ import java.util.Optional;
 @RestController
 @AllArgsConstructor
 @RequestMapping("user")
-@Slf4j
+// @Slf4j
 public class UserController {
 
     private final UserService service;

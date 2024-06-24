@@ -15,6 +15,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestTemplate;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
@@ -50,7 +51,9 @@ public class AuthenticationServiceImpl implements AuthenticationService {
                 .token(jwtToken)
                 .refreshToken(jwtRefreshToken)
                 .build();
-        return new UserDto(UserDto.id(), UserDto.userName(), UserDto.email(), UserDto.role(), UserDto.enabled(), UserDto.accountNonExpired(), UserDto.credentialsNonExpired(), UserDto.accountNonLocked(), token);
+        //variable to get the current time + 5 hours in milliseconds
+        long timeSession = LocalDateTime.now().plusHours(5).getNano();
+        return new UserDto(UserDto.id(), UserDto.userName(), UserDto.email(), UserDto.role(), UserDto.enabled(), UserDto.accountNonExpired(), UserDto.credentialsNonExpired(), UserDto.accountNonLocked(), token,timeSession);
     }
 
     @Override
@@ -64,7 +67,8 @@ public class AuthenticationServiceImpl implements AuthenticationService {
                     .token(access)
                     .refreshToken(refresh)
                     .build();
-            return Optional.of(new UserDto(UserDto.id(), UserDto.userName(), UserDto.email(), UserDto.role(), UserDto.enabled(), UserDto.accountNonExpired(), UserDto.credentialsNonExpired(), UserDto.accountNonLocked(), token));
+                    long timeSession = LocalDateTime.now().plusHours(5).getNano();
+            return Optional.of(new UserDto(UserDto.id(), UserDto.userName(), UserDto.email(), UserDto.role(), UserDto.enabled(), UserDto.accountNonExpired(), UserDto.credentialsNonExpired(), UserDto.accountNonLocked(), token, timeSession));
         } catch (Exception e) {
             return Optional.empty();
         }

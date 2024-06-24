@@ -15,7 +15,7 @@
       <module>api-gateway</module>
       <module>config-service</module>
       <module>user-service</module>
-      <module>exercise</module>
+      <module>workout-service</module>
   </modules>
 
   <properties>

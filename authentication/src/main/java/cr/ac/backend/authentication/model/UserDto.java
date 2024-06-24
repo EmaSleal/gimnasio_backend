@@ -11,5 +11,5 @@ import java.io.Serializable;
 @Builder
 public record UserDto(Long id, String userName, String email, User.Rol role, boolean enabled, boolean accountNonExpired,
                       boolean credentialsNonExpired, boolean accountNonLocked,
-                      AuthenticationResponse authenticationResponse) implements Serializable {
+                      AuthenticationResponse authenticationResponse, Long TimeSession) implements Serializable {
 }

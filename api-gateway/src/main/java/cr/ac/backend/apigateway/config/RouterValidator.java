@@ -59,6 +59,8 @@ public class RouterValidator {
             "/workoutSpecification/allByUser",
             "/dailyRoutine/all",
             "/workoutPlan/all",
+            "/workoutPlan/save",
+            "/workoutPlan/idUser",
             "/user/update",
             "/user/id"
     );
