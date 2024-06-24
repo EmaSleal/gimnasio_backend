@@ -35,6 +35,15 @@ public class WorkoutPlanServiceImpl implements WorkoutPlanService {
     }
 
     @Override
+    public Optional<List<WorkoutPlan>> getByIdUser(Long id) {
+        var list = workoutPlanRepo.findByIdUser(id);
+        if (list.isEmpty()) {
+            return Optional.empty();
+        }
+        return Optional.of(list);
+    }
+
+    @Override
     public Optional<WorkoutPlan> save(WorkoutPlan workoutPlan) {
 
         return Optional.of(workoutPlanRepo.save(workoutPlan));

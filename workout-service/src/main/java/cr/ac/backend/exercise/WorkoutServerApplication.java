@@ -82,26 +82,26 @@ public class WorkoutServerApplication {
 
             var exercisesSpecified = new ArrayList<WorkoutSpecification>();
 
-            exercisesSpecified.add( new WorkoutSpecification(null,"", 12, 4, 25, 8,false,0, exercises.get(0), new HashSet<>()));
-            exercisesSpecified.add( new WorkoutSpecification(null, "",5, 4, 100, 7, false,0, exercises.get(1), new HashSet<>()));
-            exercisesSpecified.add( new WorkoutSpecification(null, "",3, 4, 25, 8, false,0, exercises.get(2), new HashSet<>()));
-            exercisesSpecified.add( new WorkoutSpecification(null, "",12, 3, 5, 9, false,0, exercises.get(3), new HashSet<>()));
-            exercisesSpecified.add( new WorkoutSpecification(null, "",10, 3, 32, 10, false,0, exercises.get(4), new HashSet<>()));
-            exercisesSpecified.add( new WorkoutSpecification(null, "",6, 3, 22, 10, false,0, exercises.get(5), new HashSet<>()));
-            exercisesSpecified.add( new WorkoutSpecification(null, "",12, 4, 25, 8, false,0, exercises.get(6), new HashSet<>()));
-            exercisesSpecified.add( new WorkoutSpecification(null, "",3, 4, 25, 8, false,0, exercises.get(7), new HashSet<>()));
-            exercisesSpecified.add( new WorkoutSpecification(null, "",10, 3, 80, 10, false,0, exercises.get(8), new HashSet<>()));
-            exercisesSpecified.add( new WorkoutSpecification(null, "",6, 3, 15, 10, false,0, exercises.get(9), new HashSet<>()));
-            exercisesSpecified.add( new WorkoutSpecification(null, "",12, 3, 5, 9, false,0, exercises.get(10), new HashSet<>()));
-            exercisesSpecified.add( new WorkoutSpecification(null, "",10, 3, 32, 10, false,0, exercises.get(11), new HashSet<>()));
-            exercisesSpecified.add( new WorkoutSpecification(null, "",6, 3, 22, 10, false,0, exercises.get(12), new HashSet<>()));
-            exercisesSpecified.add( new WorkoutSpecification(null, "",12, 4, 25, 8, false,0, exercises.get(13), new HashSet<>()));
-            exercisesSpecified.add( new WorkoutSpecification(null, "",0, 4, 25, 8, true, 60, exercises.get(14), new HashSet<>()));
-            exercisesSpecified.add( new WorkoutSpecification(null, "",10, 3, 80, 10, false,0, exercises.get(15),  new HashSet<>()));
-            exercisesSpecified.add( new WorkoutSpecification(null, "",0, 3, 15, 10, true, 120, exercises.get(16),  new HashSet<>()));
-            exercisesSpecified.add( new WorkoutSpecification(null, "",12, 3, 5, 9, false,0, exercises.get(17), new HashSet<>()));
-            exercisesSpecified.add( new WorkoutSpecification(null, "",0, 3, 32, 10, true, 40, exercises.get(18), new HashSet<>()));
-            exercisesSpecified.add( new WorkoutSpecification(null, "",6, 3, 22, 10, false,0, exercises.get(19), new HashSet<>()));
+            exercisesSpecified.add(new WorkoutSpecification(null, "Curl de biceps: Ejercicio para fortalecer los biceps.", 12, 4, 25, 8, false, 0, exercises.get(0), new HashSet<>()));
+            exercisesSpecified.add(new WorkoutSpecification(null, "Press de pecho: Ejercicio para desarrollar la musculatura del pecho.", 5, 4, 100, 7, false, 0, exercises.get(1), new HashSet<>()));
+            exercisesSpecified.add(new WorkoutSpecification(null, "Sentadillas: Ejercicio para fortalecer las piernas.", 3, 4, 25, 8, false, 0, exercises.get(2), new HashSet<>()));
+            exercisesSpecified.add(new WorkoutSpecification(null, "Prensa de hombros: Ejercicio para desarrollar los hombros.", 12, 3, 5, 9, false, 0, exercises.get(3), new HashSet<>()));
+            exercisesSpecified.add(new WorkoutSpecification(null, "Pull-ups: Ejercicio para fortalecer la espalda.", 10, 3, 32, 10, false, 0, exercises.get(4), new HashSet<>()));
+            exercisesSpecified.add(new WorkoutSpecification(null, "Plank: Ejercicio para fortalecer el core.", 6, 3, 22, 10, false, 0, exercises.get(5), new HashSet<>()));
+            exercisesSpecified.add(new WorkoutSpecification(null, "Curl de tríceps: Ejercicio para fortalecer los tríceps.", 12, 4, 25, 8, false, 0, exercises.get(6), new HashSet<>()));
+            exercisesSpecified.add(new WorkoutSpecification(null, "Zancadas: Ejercicio para fortalecer las piernas y glúteos.", 3, 4, 25, 8, false, 0, exercises.get(7), new HashSet<>()));
+            exercisesSpecified.add(new WorkoutSpecification(null, "Remo con barra: Ejercicio para fortalecer la espalda.", 10, 3, 80, 10, false, 0, exercises.get(8), new HashSet<>()));
+            exercisesSpecified.add(new WorkoutSpecification(null, "Crunches: Ejercicio para fortalecer el core.", 6, 3, 15, 10, false, 0, exercises.get(9), new HashSet<>()));
+            exercisesSpecified.add(new WorkoutSpecification(null, "Press militar: Ejercicio para desarrollar los hombros.", 12, 3, 5, 9, false, 0, exercises.get(10), new HashSet<>()));
+            exercisesSpecified.add(new WorkoutSpecification(null, "Dominadas: Ejercicio para fortalecer la espalda.", 10, 3, 32, 10, false, 0, exercises.get(11), new HashSet<>()));
+            exercisesSpecified.add(new WorkoutSpecification(null, "Extensiones de tríceps: Ejercicio para fortalecer los tríceps.", 6, 3, 22, 10, false, 0, exercises.get(12), new HashSet<>()));
+            exercisesSpecified.add(new WorkoutSpecification(null, "Burpees: Ejercicio para trabajar todo el cuerpo.", 12, 4, 25, 8, false, 0, exercises.get(13), new HashSet<>()));
+            exercisesSpecified.add(new WorkoutSpecification(null, "Sentadillas goblet: Ejercicio para fortalecer las piernas.", 0, 4, 25, 8, true, 60, exercises.get(14), new HashSet<>()));
+            exercisesSpecified.add(new WorkoutSpecification(null, "Plancha lateral: Ejercicio para fortalecer el core.", 10, 3, 80, 10, false, 0, exercises.get(15), new HashSet<>()));
+            exercisesSpecified.add(new WorkoutSpecification(null, "Elevaciones laterales: Ejercicio para desarrollar los hombros.", 0, 3, 15, 10, true, 120, exercises.get(16), new HashSet<>()));
+            exercisesSpecified.add(new WorkoutSpecification(null, "Hip thrust: Ejercicio para fortalecer las piernas y glúteos.", 12, 3, 5, 9, false, 0, exercises.get(17), new HashSet<>()));
+            exercisesSpecified.add(new WorkoutSpecification(null, "Pull-ups pronas: Ejercicio para fortalecer la espalda.", 0, 3, 32, 10, true, 40, exercises.get(18), new HashSet<>()));
+            exercisesSpecified.add(new WorkoutSpecification(null, "Flexiones: Ejercicio para desarrollar la musculatura del pecho.", 6, 3, 22, 10, false, 0, exercises.get(19), new HashSet<>()));
 
                     var routineDay = new DailyRoutine(null,new HashSet<>(), new HashSet<>(), new HashSet<>());
             routineDay.getDays().add(ExerciseEnums.DayOfWeek.MONDAY);

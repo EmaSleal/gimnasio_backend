@@ -26,6 +26,12 @@ public class WorkoutPlanController {
         return workoutPlan.map(ResponseEntity::ok).orElseGet(() -> ResponseEntity.noContent().build());
     }
 
+    @GetMapping("/idUser/{id}")
+    public ResponseEntity<List<WorkoutPlan>> getByIdUser(@PathVariable Long id){
+        var workoutPlan = workoutPlanService.getByIdUser(id);
+        return workoutPlan.map(ResponseEntity::ok).orElseGet(() -> ResponseEntity.noContent().build());
+    }
+
     @PostMapping("/save")
     public ResponseEntity<WorkoutPlan> save(@RequestBody WorkoutPlan workoutPlan){
         var newWorkout = workoutPlanService.save(workoutPlan);

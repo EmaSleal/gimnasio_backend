@@ -14,6 +14,8 @@ public interface WorkoutPlanService {
 
     public Optional<WorkoutPlan> getById(Long id);
 
+    public Optional<List<WorkoutPlan>> getByIdUser(Long id);
+
     public Optional<WorkoutPlan> save(WorkoutPlan workoutPlan);
 
     public Boolean delete(Long id);
