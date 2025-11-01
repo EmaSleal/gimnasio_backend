@@ -1,19 +1,39 @@
 # Sprint 2: Observabilidad Avanzada
 
-**Período**: Por definir (Después de Sprint 1)  
+**Período**: 1-5 de noviembre de 2025 (Iniciando después de Sprint 1 ✅)  
 **Duración Estimada**: 3-4 días (12-16 horas)  
 **Objetivo**: Implementar stack completo de métricas y monitoreo
 
 ---
 
-## 🎯 Objetivo del Sprint
+## 📊 Estado del Sprint 1 (Completado)
 
-Implementar un sistema de observabilidad robusto que permita:
-- ✅ Monitorear métricas en tiempo real de todos los servicios
-- ✅ Crear dashboards visuales de rendimiento
+✅ **Sprint 1 - COMPLETADO 100%** (17h/24h estimadas)
+- ✅ Admin Service implementado en puerto 9000
+- ✅ Actuator securizado en todos los servicios
+- ✅ Flyway en user-service y workout-service
+- ✅ Variables de entorno configuradas (`.env`)
+- ✅ Sin IPs hardcodeadas (configuración portable)
+
+**Servicios Activos**:
+1. eureka-server (8761)
+2. config-service (8888)
+3. authentication (8589)
+4. user-service (8588)
+5. workout-service (8586)
+6. api-gateway (8590)
+7. **admin-service (9000)** ⭐ NUEVO en Sprint 1
+
+---
+
+## 🎯 Objetivo del Sprint 2
+
+Complementar el Admin Service con un sistema de observabilidad robusto que permita:
+- ✅ Monitorear métricas en tiempo real de todos los servicios (complementando Admin Service)
+- ✅ Crear dashboards visuales de rendimiento (Grafana)
 - ✅ Configurar alertas proactivas
-- ✅ Analizar tendencias históricas
-- ✅ Correlacionar trazas con métricas
+- ✅ Analizar tendencias históricas (datos persistentes)
+- ✅ Correlacionar trazas con métricas (Zipkin)
 
 ---
 
@@ -21,7 +41,7 @@ Implementar un sistema de observabilidad robusto que permita:
 
 ```
 ┌─────────────────────────────────────────────────────────────┐
-│                    OBSERVABILIDAD COMPLETA                   │
+│              OBSERVABILIDAD COMPLETA (Sprint 1 + 2)          │
 ├─────────────────────────────────────────────────────────────┤
 │                                                               │
 │  ┌─────────────┐   ┌─────────────┐   ┌─────────────┐        │
@@ -33,27 +53,28 @@ Implementar un sistema de observabilidad robusto que permita:
 │                          │                                   │
 │                    Micrometer                                │
 │                          │                                   │
-│         ┌────────────────┴────────────────┐                  │
-│         │                                 │                  │
-│         ▼                                 ▼                  │
-│  ┌─────────────┐                   ┌─────────────┐          │
-│  │  Zipkin     │                   │ Prometheus  │          │
-│  │  :9411      │                   │   :9090     │          │
-│  └─────────────┘                   └──────┬──────┘          │
+│         ┌────────────────┼────────────────┐                  │
+│         │                │                │                  │
+│         ▼                ▼                ▼                  │
+│  ┌─────────────┐  ┌─────────────┐  ┌─────────────┐          │
+│  │  Zipkin     │  │ Admin Svc   │  │ Prometheus  │          │
+│  │  :9411      │  │  :9000 ✅   │  │   :9090     │          │
+│  └─────────────┘  └─────────────┘  └──────┬──────┘          │
 │                                            │                 │
-│  Distributed Tracing                       ▼                 │
-│  - Request flows                    ┌─────────────┐         │
-│  - Latency analysis                 │  Grafana    │         │
-│  - Error tracking                   │   :3000     │         │
-│                                     └─────────────┘         │
+│  Distributed        Real-time              ▼                 │
+│  Tracing           Monitoring       ┌─────────────┐         │
+│  - Request flows   - Health checks  │  Grafana    │         │
+│  - Latency         - Metrics        │   :3000     │         │
+│  - Error tracking  - Logs           └─────────────┘         │
+│                    - Endpoints                               │
 │                                                               │
-│                                  Dashboards & Alerts         │
-│                                  - JVM Metrics               │
-│                                  - HTTP Metrics              │
-│                                  - DB Connection Pools       │
-│                                  - Custom Business Metrics   │
+│                          SPRINT 1 ✅ | SPRINT 2 🔄          │
+│                   Admin Service      | Prometheus/Grafana    │
 └─────────────────────────────────────────────────────────────┘
 ```
+
+**Nota**: El Admin Service (Sprint 1) ya proporciona monitoreo básico en tiempo real.
+Sprint 2 añade métricas históricas, dashboards personalizados y alerting avanzado.
 
 ---
 
@@ -108,12 +129,12 @@ scrape_configs:
   - job_name: 'api-gateway'
     metrics_path: '/actuator/prometheus'
     static_configs:
-      - targets: ['api-gateway:8080']
+      - targets: ['api-gateway:8590']  # ✅ Puerto correcto
 
   - job_name: 'authentication-service'
     metrics_path: '/actuator/prometheus'
     static_configs:
-      - targets: ['authentication-service:8583']
+      - targets: ['authentication-service:8589']  # ✅ Puerto correcto
 
   - job_name: 'user-service'
     metrics_path: '/actuator/prometheus'
@@ -124,6 +145,11 @@ scrape_configs:
     metrics_path: '/actuator/prometheus'
     static_configs:
       - targets: ['workout-service:8586']
+
+  - job_name: 'admin-service'  # ⭐ NUEVO - Admin Service del Sprint 1
+    metrics_path: '/actuator/prometheus'
+    static_configs:
+      - targets: ['admin-service:9000']
 ```
 
 3. **Agregar dependencia Micrometer Registry en cada servicio**:
@@ -136,24 +162,30 @@ scrape_configs:
 </dependency>
 ```
 
-4. **Exponer endpoint Prometheus en Actuator (application.yml)**:
+**Nota**: Verificar que Actuator ya expone métricas (configurado en Sprint 1).
+
+4. **Actualizar application.yml si es necesario**:
 ```yaml
 management:
   endpoints:
     web:
       exposure:
-        include: health,info,metrics,prometheus
+        include: health,info,metrics,prometheus  # ✅ Ya configurado en Sprint 1
+  endpoint:
+    health:
+      show-details: when-authorized  # ✅ Ya configurado en Sprint 1
   metrics:
     export:
       prometheus:
-        enabled: true
+        enabled: true  # ⭐ NUEVO - Agregar solo esta sección
 ```
 
 **Validación**:
 - [ ] Prometheus accesible en http://localhost:9090
-- [ ] Dashboard Prometheus muestra 6 targets UP
+- [ ] Dashboard Prometheus muestra **7 targets UP** (incluyendo admin-service)
 - [ ] Endpoint /actuator/prometheus devuelve métricas en formato Prometheus
 - [ ] Queries básicas funcionan: `up`, `jvm_memory_used_bytes`
+- [ ] Admin Service también visible en Prometheus
 
 ---
 
@@ -202,11 +234,13 @@ datasources:
     editable: true
 ```
 
-3. **Agregar GRAFANA_PASSWORD a .env.example**:
+3. **Agregar GRAFANA_PASSWORD a .env**:
 ```bash
-# Grafana Admin Password
+# Grafana Admin Password (agregar a archivo .env existente)
 GRAFANA_PASSWORD=your_secure_grafana_password
 ```
+
+**Nota**: El archivo `.env` ya existe desde Sprint 1. Solo agregar esta variable.
 
 **Validación**:
 - [ ] Grafana accesible en http://localhost:3000
@@ -320,7 +354,44 @@ Severidad: Warning
 
 ---
 
-## 📅 Planificación Tentativa
+## � Integración Admin Service + Prometheus/Grafana
+
+### Comparación de Herramientas
+
+| Característica | Admin Service (Sprint 1) | Prometheus + Grafana (Sprint 2) |
+|----------------|-------------------------|----------------------------------|
+| **Propósito** | Monitoreo en tiempo real | Métricas históricas y alerting |
+| **Puerto** | 9000 | 9090 (Prometheus) + 3000 (Grafana) |
+| **Descubrimiento** | Vía Eureka (automático) | Configuración estática |
+| **Retención** | No persistente (se pierde al reiniciar) | Persistente (TSDB) |
+| **Dashboards** | Web UI básico | Dashboards personalizables avanzados |
+| **Alertas** | Notificaciones simples | Alerting robusto con múltiples canales |
+| **Logs** | Acceso en tiempo real | No incluido (considerar ELK para Sprint 3) |
+| **Thread/Heap Dumps** | ✅ Sí | ❌ No |
+| **Cambio de Log Levels** | ✅ Sí | ❌ No |
+| **Métricas Custom** | ✅ Vía Actuator | ✅ Vía Micrometer |
+
+### Casos de Uso Complementarios
+
+**Usar Admin Service cuando**:
+- ✅ Necesitas ver estado actual de servicios rápidamente
+- ✅ Quieres cambiar niveles de logging sin reiniciar
+- ✅ Necesitas hacer thread dump o heap dump
+- ✅ Debugging de problemas en tiempo real
+
+**Usar Prometheus/Grafana cuando**:
+- ✅ Necesitas ver tendencias históricas (última semana, mes, etc.)
+- ✅ Quieres dashboards personalizados con múltiples métricas
+- ✅ Necesitas alertas proactivas (antes de que falle)
+- ✅ Análisis de capacidad y planificación
+
+**Estrategia Recomendada**: Usar ambos en conjunto
+- Admin Service para operaciones del día a día
+- Prometheus/Grafana para análisis y alerting
+
+---
+
+## �📅 Planificación Tentativa
 
 ### Día 1 (4h)
 - ✅ Tarea 1: Prometheus setup completo
@@ -343,26 +414,35 @@ Severidad: Warning
 
 ## ✅ Criterios de Finalización Sprint 2
 
-- [ ] Prometheus scrapeando métricas de 6 servicios
-- [ ] Grafana accesible con password seguro
+- [ ] Prometheus scrapeando métricas de **7 servicios** (incluyendo admin-service)
+- [ ] Grafana accesible con password seguro (configurado en `.env`)
 - [ ] Al menos 3 dashboards funcionando
 - [ ] Datos históricos visibles (mínimo 1 día)
 - [ ] Al menos 3 alertas configuradas
 - [ ] Documentación de acceso y uso
 - [ ] README actualizado con nuevos servicios
+- [ ] Admin Service (Sprint 1) y Prometheus/Grafana trabajando en conjunto
 
 ---
 
 ## 🔗 Dependencias
 
-**Pre-requisitos** (de Sprint 1):
-- ✅ Actuator securizado funcionando
-- ✅ Admin Service operativo
-- ✅ Variables de entorno configuradas
+**Pre-requisitos completados en Sprint 1** ✅:
+- ✅ Actuator securizado funcionando en todos los servicios
+- ✅ Admin Service operativo en puerto 9000
+- ✅ Variables de entorno configuradas (`.env` creado)
+- ✅ Endpoints `/actuator/health`, `/actuator/info`, `/actuator/metrics` expuestos
+- ✅ Sistema portable sin IPs hardcodeadas
+
+**Nuevas dependencias Sprint 2**:
+- Agregar `micrometer-registry-prometheus` a cada servicio
+- Habilitar exportación Prometheus en `application.yml`
+- Configurar Docker Compose con Prometheus y Grafana
 
 **Bloqueantes**:
-- Si Actuator no está expuesto, Prometheus no puede scrapear métricas
-- Si Admin Service falla, tener Prometheus como respaldo
+- ⚠️ Si Actuator no está expuesto, Prometheus no puede scrapear métricas
+  - **Mitigación**: Ya configurado en Sprint 1
+- ⚠️ Si Admin Service falla, Prometheus/Grafana siguen funcionando como respaldo
 
 ---
 
@@ -376,4 +456,13 @@ Severidad: Warning
 ---
 
 **Creado**: 1 de noviembre de 2025  
-**Estado**: 📋 Planificado (Pendiente Sprint 1)
+**Actualizado**: 1 de noviembre de 2025 (Adaptado post Sprint 1)  
+**Estado**: 📋 Listo para Iniciar (Sprint 1 Completado ✅)
+
+**Cambios respecto a la planificación original**:
+- ✅ Admin Service ya implementado en Sprint 1 (puerto 9000)
+- ✅ Actuator ya configurado y securizado en Sprint 1
+- ✅ Variables de entorno (`.env`) ya configuradas en Sprint 1
+- ✅ Puertos de servicios validados y actualizados
+- ⭐ Agregado admin-service a configuración de Prometheus
+- 📝 Documentación actualizada con estado real del sistema
