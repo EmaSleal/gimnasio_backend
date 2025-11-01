@@ -1,23 +1,27 @@
-# Usa una imagen base de OpenJDK para Java 17 en Alpine Linux
-FROM openjdk:21 as builder
-
-# Establece el directorio de trabajo
+# ---- Build ----
+FROM maven:3.9-eclipse-temurin-21 AS build
 WORKDIR /app
 
-# Copia solo el archivo JAR construido desde la imagen de compilación
-COPY /target/api-gateway-1.0-SNAPSHOT.jar app.jar
+# Descarga dependencias sin copiar todo (cache eficiente)
+COPY pom.xml .
+RUN mvn -q -DskipTests dependency:go-offline
 
-# Usa una nueva imagen base para el entorno de ejecución
-FROM openjdk:21
+# Código fuente del módulo eureka
+COPY src ./src
+RUN mvn -q -DskipTests package
 
-# Establece el directorio de trabajo
+# ---- Runtime ----
+FROM eclipse-temurin:21-jre-jammy
 WORKDIR /app
 
-# Copia solo el archivo JAR construido desde la imagen de compilación
-COPY --from=builder /app/app.jar .
+# Copia el jar construido
+COPY --from=build /app/target/*.jar app.jar
 
-# Expone el puerto en el que se ejecuta tu aplicación Spring Boot
+# Ajustes JVM opcionales (memoria en contenedor)
+ENV JAVA_TOOL_OPTIONS="-XX:MaxRAMPercentage=75 -XX:+UseG1GC"
+
 EXPOSE 8590
+# Healthcheck simple (si usas Actuator, cambia la URL)
+HEALTHCHECK --interval=10s --timeout=5s --retries=12 CMD wget -qO- http://localhost:8590 || exit 1
 
-# Comando para ejecutar la aplicación cuando el contenedor se inicie
-CMD ["java", "-jar", "app.jar"]
+ENTRYPOINT ["java","-jar","/app/app.jar"]
