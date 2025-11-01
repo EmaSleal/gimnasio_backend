@@ -75,18 +75,19 @@
 ### Fase 2: Persistencia - User Service (5h) 🔴 CRÍTICO
 **Objetivo**: Implementar Flyway en user-service para preservar datos
 
-**Estado**: ⏳ Desbloqueado - Listo para iniciar  
-**Progreso**: `[░░░░░░░░░░] 0%`
+**Estado**: 🏗️ En Progreso  
+**Progreso**: `[████████░░] 80%` - Flyway implementado, pendiente testing
 
 **Tareas Incluidas**:
-- [ ] **Tarea 2.1**: 💾 Flyway en user-service (4h)
-  - Backup de base de datos actual
-  - Agregar dependencia Flyway
-  - Crear estructura db/migration
-  - Crear V1__initial_schema.sql
-  - Crear V2__seed_data.sql
-  - Cambiar DDL auto a validate
-  - Validar migraciones
+- [x] **Tarea 2.1**: 💾 Flyway en user-service (4h) ✅ **COMPLETADA**
+  - ✅ Agregar dependencia Flyway al pom.xml
+  - ✅ Crear estructura db/migration
+  - ✅ Crear V1__initial_schema.sql (tabla user_gym completa)
+  - ✅ Crear V2__seed_initial_data.sql (usuarios de prueba)
+  - ✅ Configurar Flyway en application.yml
+  - ✅ Cambiar DDL auto de 'create' a 'validate'
+  - ✅ Crear documentación README.md de migraciones
+  - ✅ Validar compilación exitosa
 
 - [ ] Testing y validación (1h)
 

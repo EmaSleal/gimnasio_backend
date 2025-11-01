@@ -19,13 +19,24 @@ spring:
         username: ${DB_USERNAME:postgres}
         password: ${DB_PASSWORD}
         driver-class-name: org.postgresql.Driver
+    
+    # Flyway configuration
+    flyway:
+        enabled: true
+        baseline-on-migrate: true
+        baseline-version: 0
+        locations: classpath:db/migration
+        validate-on-migrate: true
+        clean-disabled: true
+        
     jpa:
         hibernate:
-            ddl-auto: create #colocar none cuando ya se haya creado la base de datos
+            ddl-auto: validate # Changed from 'create' to 'validate' - Flyway manages schema now
         show-sql: true
         properties:
             hibernate:
                 dialect: org.hibernate.dialect.PostgreSQLDialect
+                format_sql: true
 
 #eureka:
 #  client:
