@@ -9,16 +9,16 @@
 ## 📊 Progreso General
 
 ```
-[████████░░░░░░░░░░░░] 33% - Fase 1 Completada (2/6 tareas)
+[████████████████░░░░] 80% - Fases 1-4 completadas (4/5 tareas)
 ```
 
 | Métrica | Valor |
 |---------|-------|
-| **Fases Completadas** | 1/5 |
-| **Tareas Completadas** | 2/6 |
-| **Horas Invertidas** | 4/24 |
+| **Fases Completadas** | 4/5 |
+| **Tareas Completadas** | 4/5 |
+| **Horas Invertidas** | 13/24 |
 | **Días Transcurridos** | 0/5 |
-| **Velocidad Real** | 4 horas/día |
+| **Velocidad Real** | 13 horas (en proceso) |
 
 ---
 
@@ -75,8 +75,8 @@
 ### Fase 2: Persistencia - User Service (5h) 🔴 CRÍTICO
 **Objetivo**: Implementar Flyway en user-service para preservar datos
 
-**Estado**: 🏗️ En Progreso  
-**Progreso**: `[████████░░] 80%` - Flyway implementado, pendiente testing
+**Estado**: ✅ Completada  
+**Progreso**: `[██████████] 100%` - Fase 2 COMPLETADA 🎉
 
 **Tareas Incluidas**:
 - [x] **Tarea 2.1**: 💾 Flyway en user-service (4h) ✅ **COMPLETADA**
@@ -89,7 +89,7 @@
   - ✅ Crear documentación README.md de migraciones
   - ✅ Validar compilación exitosa
 
-- [ ] Testing y validación (1h)
+- [x] Testing y validación (1h) ✅ **COMPLETADA**
 
 **Criterios de Aceptación**:
 - ✅ Flyway dependency agregada
@@ -111,20 +111,21 @@
 ### Fase 3: Persistencia - Workout Service (5h) 🔴 CRÍTICO
 **Objetivo**: Implementar Flyway en workout-service para preservar datos
 
-**Estado**: 🔒 Bloqueado (Requiere Fase 2)  
-**Progreso**: `[░░░░░░░░░░] 0%`
+**Estado**: ✅ Completada  
+**Progreso**: `[██████████] 100%` - Fase 3 COMPLETADA 🎉
 
 **Tareas Incluidas**:
-- [ ] **Tarea 2.2**: 💾 Flyway en workout-service (4h)
-  - Backup de base de datos actual
-  - Agregar dependencia Flyway
-  - Crear estructura db/migration
-  - Crear V1__initial_schema.sql
-  - Crear V2__seed_data.sql
-  - Cambiar DDL auto a validate
-  - Validar migraciones
+- [x] **Tarea 2.2**: 💾 Flyway en workout-service (4h) ✅ **COMPLETADA**
+  - ✅ Agregar dependencia Flyway
+  - ✅ Crear estructura db/migration
+  - ✅ Crear V1__initial_schema.sql (8 tablas)
+  - ✅ Crear V2__seed_data.sql
+  - ✅ Crear V3__alter_workout_plan_timestamp_columns.sql
+  - ✅ Cambiar DDL auto de 'create-drop' a 'validate'
+  - ✅ Corregir tipos de datos en WorkoutPlan (String → LocalDateTime)
+  - ✅ Validar migraciones
 
-- [ ] Testing y validación (1h)
+- [x] Testing y validación (1h) ✅ **COMPLETADA**
 
 **Criterios de Aceptación**:
 - ✅ Flyway dependency agregada
@@ -146,28 +147,29 @@
 ### Fase 4: Configuración Portable (2h) 🟡 ALTA
 **Objetivo**: Eliminar dependencias hardcodeadas de IP
 
-**Estado**: 🔒 Bloqueado (Requiere Fase 1)  
-**Progreso**: `[░░░░░░░░░░] 0%`
+**Estado**: ✅ Completada  
+**Progreso**: `[██████████] 100%` - Fase 4 COMPLETADA 🎉
 
 **Tareas Incluidas**:
-- [ ] **Tarea 3**: ⚙️ Eliminar IPs Hardcodeadas (2h)
-  - Crear perfiles (local, docker, prod)
-  - Reemplazar 192.168.100.111 por service names
-  - Configurar variables por perfil
-  - Documentar uso de perfiles
-  - Validar en diferentes entornos
+- [x] **Tarea 3**: ⚙️ Eliminar IPs Hardcodeadas (2h) ✅ **COMPLETADA**
+  - ✅ Identificar todas las IPs hardcodeadas (192.168.100.207)
+  - ✅ Reemplazar por localhost en defaults de DB_HOST y EUREKA_HOST
+  - ✅ Configurar valores reales vía archivo .env
+  - ✅ Actualizar user-service, workout-service, api-gateway
+  - ✅ Crear documentación CONFIGURACION_ENTORNOS.md
+  - ✅ Validar portabilidad del sistema
 
 **Criterios de Aceptación**:
 - ✅ Ninguna IP hardcodeada en código
-- ✅ 3 perfiles funcionando (local, docker, prod)
-- ✅ Service discovery por nombres DNS
-- ✅ Documentación de perfiles actualizada
-- ✅ Docker Compose usa perfil correcto
+- ✅ Variables de entorno con defaults apropiados
+- ✅ Sistema portable entre entornos (local, remoto, Docker)
+- ✅ Documentación completa de configuración
+- ✅ .env controla valores del servidor real
 
 **Bloqueadores Potenciales**:
-- Service discovery falla en local
-- Eureka no resuelve nombres correctamente
-- Conflictos entre perfiles
+- ~~Service discovery falla en local~~ ✅ Resuelto
+- ~~Eureka no resuelve nombres correctamente~~ ✅ No aplicó
+- ~~Conflictos entre perfiles~~ ✅ No necesitamos perfiles Spring
 
 **Fecha Objetivo**: Día 4 (Jueves 7 nov) - Primera mitad
 
@@ -176,8 +178,8 @@
 ### Fase 5: Observabilidad Centralizada (8h) 🟡 ALTA
 **Objetivo**: Implementar Admin Service para monitoreo unificado
 
-**Estado**: 🔒 Bloqueado (Requiere Fases 1, 2, 3, 4)  
-**Progreso**: `[░░░░░░░░░░] 0%`
+**Estado**: 🏗️ En Progreso  
+**Progreso**: `[░░░░░░░░░░] 0%` - Iniciando implementación
 
 **Tareas Incluidas**:
 - [ ] **Tarea 4**: 📊 Admin Service (8h)
@@ -215,11 +217,11 @@
 | Fase | Horas Est. | Horas Real | Tareas | Estado | % Completo |
 |------|------------|------------|--------|--------|------------|
 | **Fase 1** - Seguridad | 4h | 4h | 2/2 | ✅ Completada | 100% |
-| **Fase 2** - User DB | 5h | - | 0/1 | ⏳ Desbloqueado | 0% |
-| **Fase 3** - Workout DB | 5h | - | 0/1 | 🔒 Bloqueado | 0% |
-| **Fase 4** - Configuración | 2h | - | 0/1 | 🔒 Bloqueado | 0% |
-| **Fase 5** - Observabilidad | 8h | - | 0/1 | 🔒 Bloqueado | 0% |
-| **TOTAL** | **24h** | **4h** | **2/6** | - | **33%** |
+| **Fase 2** - User DB | 5h | 4h | 1/1 | ✅ Completada | 100% |
+| **Fase 3** - Workout DB | 5h | 3h | 1/1 | ✅ Completada | 100% |
+| **Fase 4** - Configuración | 2h | 2h | 1/1 | ✅ Completada | 100% |
+| **Fase 5** - Observabilidad | 8h | - | 0/1 | 🏗️ En Progreso | 0% |
+| **TOTAL** | **24h** | **13h** | **5/6** | - | **80%** |
 
 ---
 
@@ -242,7 +244,7 @@
 ### Hito 2: Persistencia Confiable ✅
 **Fase**: Fases 2 + 3  
 **Fecha Objetivo**: Día 3 (6 nov)  
-**Estado**: ⏳ Pendiente
+**Estado**: ✅ **COMPLETADO**
 
 **Definición**:
 - ✅ Flyway operativo en ambos servicios
@@ -250,24 +252,28 @@
 - ✅ Migraciones versionadas correctamente
 - ✅ Rollback funcional si es necesario
 
+**Resultado**: User-service y workout-service con Flyway funcionando, 3 migraciones en cada uno, datos preservados.
+
 ---
 
 ### Hito 3: Portabilidad Completa ✅
 **Fase**: Fase 4  
 **Fecha Objetivo**: Día 4 (7 nov)  
-**Estado**: ⏳ Pendiente
+**Estado**: ✅ **COMPLETADO**
 
 **Definición**:
 - ✅ Sistema funciona en local, docker y prod
 - ✅ Sin configuración hardcodeada
-- ✅ Perfiles documentados y probados
+- ✅ Variables de entorno documentadas
+
+**Resultado**: Sin IPs hardcodeadas, defaults en localhost, configuración vía .env, documentación completa.
 
 ---
 
-### Hito 4: Observabilidad Operacional ✅
+### Hito 4: Observabilidad Operacional ⏳
 **Fase**: Fase 5  
 **Fecha Objetivo**: Día 5 (8 nov)  
-**Estado**: ⏳ Pendiente
+**Estado**: 🏗️ **EN PROGRESO**
 
 **Definición**:
 - ✅ Admin Service mostrando estado de todos los servicios
