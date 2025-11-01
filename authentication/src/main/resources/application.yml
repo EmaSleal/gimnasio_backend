@@ -27,3 +27,33 @@ jwt:
     expiration: ${JWT_EXPIRATION:86400000}
 sender:
     key: ${RESEND_API_KEY}
+
+# Actuator Configuration
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info,metrics,prometheus
+      base-path: /actuator
+  endpoint:
+    health:
+      show-details: when-authorized
+      probes:
+        enabled: true
+  prometheus:
+    metrics:
+      export:
+        enabled: true
+  info:
+    env:
+      enabled: true
+
+# Application Info
+info:
+  app:
+    name: Authentication Service
+    description: JWT authentication and user management
+    version: 1.0.0
+    encoding: ${project.build.sourceEncoding:UTF-8}
+    java:
+      version: ${java.version:21}
