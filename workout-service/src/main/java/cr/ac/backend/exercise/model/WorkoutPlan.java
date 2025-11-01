@@ -1,6 +1,5 @@
 package cr.ac.backend.exercise.model;
 
-import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
@@ -8,6 +7,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.io.Serializable;
+import java.time.LocalDateTime;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -52,14 +52,12 @@ public class WorkoutPlan implements Serializable{
     private String endDate;
 
     //created_at trigger that is set when the workout is created
-    @JsonFormat(pattern = "yyyy-MM-dd:HH:mm:ss")
     @Column(name = "created_at", nullable = true)
-    private String createdAt;
+    private LocalDateTime createdAt;
 
     //updated_at trigger that is set when the workout is updated
-    @JsonFormat(pattern = "yyyy-MM-dd:HH:mm:ss")
     @Column(name = "updated_at", nullable = true)
-    private String updatedAt;
+    private LocalDateTime updatedAt;
 
     //is Template
     @Column(name = "is_template", nullable = false)

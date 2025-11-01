@@ -16,23 +16,31 @@ spring:
   zipkin:
     base-url: ${ZIPKIN_BASE_URL:http://localhost:9411}
   datasource: #postgres database configuration
-    url: jdbc:postgresql://${DB_HOST:192.168.100.111}:${DB_PORT:5432}/${DB_NAME_EXERCISE:gym_exercise}
+    url: jdbc:postgresql://${DB_HOST:192.168.100.207}:${DB_PORT:5432}/${DB_NAME_EXERCISE:gym_exercise}
     username: ${DB_USERNAME:postgres}
     password: ${DB_PASSWORD}
     driver-class-name: org.postgresql.Driver
   jpa:
     hibernate:
-      ddl-auto: create-drop #colocar none cuando ya se haya creado la base de datos
+      ddl-auto: validate # validate only, Flyway manages schema
     show-sql: true
     properties:
       hibernate:
         dialect: org.hibernate.dialect.PostgreSQLDialect
+  # Flyway Configuration
+  flyway:
+    enabled: true
+    baseline-on-migrate: true # Handle existing databases
+    clean-disabled: true # Prevent accidental data loss
+    validate-on-migrate: true
+    locations: classpath:db/migration
+    schemas: public
 
 
 eureka:
   client:
     service-url:
-      defaultZone: http://${EUREKA_HOST:192.168.100.111}:${EUREKA_PORT:8761}/eureka/
+      defaultZone: http://${EUREKA_HOST:192.168.100.207}:${EUREKA_PORT:8761}/eureka/
       fetch-registry: true
       register-with-eureka: true
 # Actuator Configuration

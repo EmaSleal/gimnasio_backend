@@ -57,9 +57,9 @@ public class WorkoutPlanServiceImpl implements WorkoutPlanService {
 
     @Override
     public Optional<WorkoutPlan> update(WorkoutPlan workoutPlan) {
-        //get the current date of the system with format "yyyy-MM-dd:HH:mm:ss"
-        var currentDate = new java.sql.Timestamp(System.currentTimeMillis());
-        workoutPlan.setUpdatedAt(currentDate.toString());
+        //get the current date of the system
+        var currentDate = java.time.LocalDateTime.now();
+        workoutPlan.setUpdatedAt(currentDate);
         return Optional.of(workoutPlanRepo.save(workoutPlan));
     }
 
