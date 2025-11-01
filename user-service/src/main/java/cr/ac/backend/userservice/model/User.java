@@ -5,9 +5,15 @@ import jakarta.persistence.*;
 import lombok.*;
 
 import java.io.Serializable;
+import java.time.LocalDateTime;
 import java.util.Collection;
 import java.util.List;
 import java.util.Objects;
+
+import org.springframework.data.annotation.CreatedBy;
+import org.springframework.data.annotation.CreatedDate;
+import org.springframework.data.annotation.LastModifiedBy;
+import org.springframework.data.annotation.LastModifiedDate;
 
 @AllArgsConstructor
 @NoArgsConstructor
@@ -50,18 +56,21 @@ public class User implements Serializable {
     @Column(name = "account_non_locked", nullable = false)
     private boolean accountNonLocked;
 
+    @CreatedBy
     @Column(name = "created_by", nullable = true)
     private Long createdBy;
 
-    //created_at trigger that is set when the workout is created
-    @JsonFormat(pattern = "yyyy-MM-dd:HH:mm:ss")
-    @Column(name = "created_at", nullable = true)
-    private String createdAt;
+    @LastModifiedBy
+    @Column(name = "last_modified_by", nullable = true)
+    private Long lastModifiedBy;
 
-    //updated_at trigger that is set when the workout is updated
-    @JsonFormat(pattern = "yyyy-MM-dd:HH:mm:ss")
+    @CreatedDate
+    @Column(name = "created_at", nullable = true)
+    private LocalDateTime createdAt;
+
+    @LastModifiedDate
     @Column(name = "updated_at", nullable = true)
-    private String updatedAt;
+    private LocalDateTime updatedAt;
 
 
 

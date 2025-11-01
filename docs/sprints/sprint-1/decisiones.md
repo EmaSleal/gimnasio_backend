@@ -203,7 +203,7 @@ spring:
 **Asignado a**: _[Nombre del desarrollador]_
 
 #### Decisión
-Eliminar todas las IPs hardcodeadas (`192.168.100.111`) y usar nombres de servicio de Docker + perfiles de Spring para diferentes entornos.
+Eliminar todas las IPs hardcodeadas (`192.168.100.207`) y usar nombres de servicio de Docker + perfiles de Spring para diferentes entornos.
 
 #### Problema Actual
 ```yaml
@@ -211,10 +211,10 @@ Eliminar todas las IPs hardcodeadas (`192.168.100.111`) y usar nombres de servic
 eureka:
   client:
     service-url:
-      defaultZone: http://192.168.100.111:8761/eureka/
+      defaultZone: http://192.168.100.207:8761/eureka/
 spring:
   datasource:
-    url: jdbc:postgresql://192.168.100.111:5432/gym_authentication
+    url: jdbc:postgresql://192.168.100.207:5432/gym_authentication
 ```
 
 **Impacto**: 

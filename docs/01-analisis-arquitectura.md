@@ -316,7 +316,7 @@ logging:
 ```
 
 ### 9.3 Configuración de IPs
-⚠️ **IP Hardcodeada**: `192.168.100.111`
+⚠️ **IP Hardcodeada**: `192.168.100.207`
 - Eureka defaultZone
 - PostgreSQL datasource URLs
 

@@ -141,7 +141,7 @@ spring:
 eureka:
   client:
     service-url:
-      defaultZone: http://192.168.100.111:8761/eureka/
+      defaultZone: http://192.168.100.207:8761/eureka/
 ```
 
 **Impacto**: No funciona en otros entornos ni con Docker Compose.

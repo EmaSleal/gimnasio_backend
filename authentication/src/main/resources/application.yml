@@ -19,7 +19,7 @@ spring:
 #eureka:
 #  client:
 #    service-url:
-#      defaultZone: http://${EUREKA_HOST:192.168.100.111}:${EUREKA_PORT:8761}/eureka/
+#      defaultZone: http://${EUREKA_HOST:192.168.100.207}:${EUREKA_PORT:8761}/eureka/
 #      fetch-registry: true
 #      register-with-eureka: true
 jwt:

@@ -49,7 +49,7 @@ El archivo `.gitignore` debe contener:
 
 | Variable | Descripción | Ejemplo |
 |----------|-------------|---------|
-| `DB_HOST` | Host del servidor PostgreSQL | `192.168.100.111` |
+| `DB_HOST` | Host del servidor PostgreSQL | `192.168.100.207` |
 | `DB_PORT` | Puerto de PostgreSQL | `5432` |
 | `DB_USERNAME` | Usuario de la base de datos | `postgres` |
 | `DB_PASSWORD` | ⚠️ **SECRETO** - Contraseña de la BD | `Mi_Password_123` |
@@ -74,7 +74,7 @@ El archivo `.gitignore` debe contener:
 
 | Variable | Descripción | Ejemplo |
 |----------|-------------|---------|
-| `EUREKA_HOST` | Host del servidor Eureka | `192.168.100.111` |
+| `EUREKA_HOST` | Host del servidor Eureka | `192.168.100.207` |
 | `EUREKA_PORT` | Puerto de Eureka | `8761` |
 
 ---

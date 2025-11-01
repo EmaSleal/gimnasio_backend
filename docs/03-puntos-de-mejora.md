@@ -184,11 +184,11 @@ CREATE TABLE users (
 eureka:
   client:
     service-url:
-      defaultZone: http://192.168.100.111:8761/eureka/  # ❌
+      defaultZone: http://192.168.100.207:8761/eureka/  # ❌
 
 spring:
   datasource:
-    url: jdbc:postgresql://192.168.100.111:5432/gym_authentication  # ❌
+    url: jdbc:postgresql://192.168.100.207:5432/gym_authentication  # ❌
 ```
 
 **Impacto**:

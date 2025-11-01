@@ -15,7 +15,7 @@ spring:
       supports-join: false
 
     datasource: #postgres database configuration
-        url: jdbc:postgresql://192.168.100.111:5432/gym_authentication
+        url: jdbc:postgresql://192.168.100.207:5432/gym_authentication
         username: postgres
         password: Chismosear01
         driver-class-name: org.postgresql.Driver
@@ -30,7 +30,7 @@ spring:
 #eureka:
 #  client:
 #    service-url:
-#      defaultZone: http://192.168.100.111:8761/eureka/
+#      defaultZone: http://192.168.100.207:8761/eureka/
 #      fetch-registry: true
 #      register-with-eureka: true
 jwt:

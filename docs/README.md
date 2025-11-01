@@ -86,7 +86,7 @@ Este directorio contiene el análisis completo del sistema de microservicios de 
 ### Problemas Críticos Identificados 🔴
 1. **Secretos expuestos** en application.yml (JWT, passwords, API keys)
 2. **DDL auto destructivo** (create/create-drop) → Pérdida de datos
-3. **IPs hardcodeadas** (192.168.100.111) → No portable
+3. **IPs hardcodeadas** (192.168.100.207) → No portable
 4. **Actuator sin seguridad** → Potencial exposición de información sensible
 
 ### Sobre el Actuator (Tu Pregunta Específica)

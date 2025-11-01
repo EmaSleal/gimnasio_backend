@@ -138,7 +138,7 @@ docker exec db-microservices pg_dump -U postgres gym_exercise > backup_exercise.
 - [ ] Crear `application-docker.yml` en cada servicio
 - [ ] Crear `application-local.yml` en cada servicio
 - [ ] Actualizar `docker-compose.yml` con `SPRING_PROFILES_ACTIVE=docker`
-- [ ] Reemplazar `192.168.100.111` con nombres de servicio
+- [ ] Reemplazar `192.168.100.207` con nombres de servicio
 - [ ] Validar con Docker Compose
 - [ ] Validar ejecución local
 

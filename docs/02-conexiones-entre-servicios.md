@@ -197,7 +197,7 @@ public class AuthenticationServiceImpl {
 ```yaml
 spring:
   datasource:
-    url: jdbc:postgresql://192.168.100.111:5432/gym_authentication
+    url: jdbc:postgresql://192.168.100.207:5432/gym_authentication
     username: postgres
     password: Chismosear01
     driver-class-name: org.postgresql.Driver
@@ -210,7 +210,7 @@ spring:
 ```yaml
 spring:
   datasource:
-    url: jdbc:postgresql://192.168.100.111:5432/gym_exercise
+    url: jdbc:postgresql://192.168.100.207:5432/gym_exercise
     username: postgres
     password: Chismosear01
     driver-class-name: org.postgresql.Driver
@@ -220,7 +220,7 @@ spring:
 ```
 
 **Problemas Identificados**:
-- IP hardcodeada (`192.168.100.111`)
+- IP hardcodeada (`192.168.100.207`)
 - DDL auto destructivo en ambos servicios
 - Credenciales en texto plano
 
@@ -235,7 +235,7 @@ Todos los servicios (excepto eureka-server) se registran:
 eureka:
   client:
     service-url:
-      defaultZone: http://192.168.100.111:8761/eureka/
+      defaultZone: http://192.168.100.207:8761/eureka/
     fetch-registry: true
     register-with-eureka: true
 ```
@@ -546,7 +546,7 @@ Expuesto a través de API Gateway únicamente.
 - Authentication solo debería generar/validar tokens
 
 ### 6.2 IP Hardcodeada
-**Problema**: `192.168.100.111` en múltiples configuraciones
+**Problema**: `192.168.100.207` en múltiples configuraciones
 
 **Impacto**:
 - No funciona en otros entornos
@@ -555,7 +555,7 @@ Expuesto a través de API Gateway únicamente.
 **Solución**:
 ```yaml
 # En lugar de:
-defaultZone: http://192.168.100.111:8761/eureka/
+defaultZone: http://192.168.100.207:8761/eureka/
 
 # Usar:
 defaultZone: http://eureka-server:8761/eureka/

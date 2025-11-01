@@ -142,7 +142,7 @@ mvn spring-boot:run
 ### Paso 4: Verificar
 ```bash
 # Conectar a la base de datos
-psql -h 192.168.100.111 -U postgres -d gym_authentication
+psql -h 192.168.100.207 -U postgres -d gym_authentication
 
 # Ver migraciones ejecutadas
 SELECT version, description, installed_on FROM flyway_schema_history;
@@ -166,10 +166,10 @@ DROP INDEX IF EXISTS idx_user_gym_phone;
 ### Opción 2: Restaurar desde Backup
 ```bash
 # Antes de migración importante
-pg_dump -h 192.168.100.111 -U postgres gym_authentication > backup_before_v3.sql
+pg_dump -h 192.168.100.207 -U postgres gym_authentication > backup_before_v3.sql
 
 # Si falla, restaurar
-psql -h 192.168.100.111 -U postgres gym_authentication < backup_before_v3.sql
+psql -h 192.168.100.207 -U postgres gym_authentication < backup_before_v3.sql
 ```
 
 ---

@@ -36,3 +36,33 @@ build/
 
 ### Mac OS ###
 .DS_Store
+
+### Environment Variables ###
+.env
+.env.local
+.env.*.local
+
+### Secrets ###
+*.key
+*.pem
+secrets/
+credentials/
+
+### Logs ###
+*.log
+logs/
+
+### Temporary Files ###
+*.tmp
+*.temp
+*.swp
+*.swo
+*~
+
+### Database ###
+*.db
+*.sqlite
+*.sqlite3
+
+### Docker ###
+docker-compose.override.yml

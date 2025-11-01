@@ -24,8 +24,8 @@ public class UserServiceImpl implements UserService {
     @Override
     public User register(User request) {
         //log.info("Registering user {}", request);
-        //get the current date of the system with format "yyyy-MM-dd:HH:mm:ss"
-        var currentDate = new java.sql.Timestamp(System.currentTimeMillis());
+        //get the current date of the system
+        var currentDate = java.time.LocalDateTime.now();
         var userSecurity = User.builder()
                 .userName(request.getUsername())
                 .password(passwordEncoder.encode(request.getPassword()))
@@ -36,8 +36,8 @@ public class UserServiceImpl implements UserService {
                 .credentialsNonExpired(true)
                 .accountNonLocked(true)
                 .createdBy(request.getCreatedBy())
-                .createdAt(currentDate.toString())
-                .updatedAt(currentDate.toString())
+                .createdAt(currentDate)
+                .updatedAt(currentDate)
                 .build();
         userRepository.save(userSecurity);
         return userSecurity;
@@ -122,8 +122,8 @@ public class UserServiceImpl implements UserService {
         if (user.isEmpty()) {
             return Optional.empty();
         }
-        //get the current date of the system with format "yyyy-MM-dd:HH:mm:ss"
-        var currentDate = new java.sql.Timestamp(System.currentTimeMillis());
+        //get the current date of the system
+        var currentDate = java.time.LocalDateTime.now();
         var userSecurity = User.builder()
                 .id(userDto.getId())
                 .userName(userDto.getUsername())
@@ -135,7 +135,7 @@ public class UserServiceImpl implements UserService {
                 .accountNonLocked(userDto.isAccountNonLocked())
                 .createdBy(userDto.getCreatedBy())
                 .createdAt(userDto.getCreatedAt())
-                .updatedAt(currentDate.toString())
+                .updatedAt(currentDate)
                 .build();
         userRepository.save(userSecurity);
         return Optional.of(new UserDto(userSecurity.getId(), userSecurity.getUsername(), userSecurity.getEmail(), userSecurity.getRole(), userSecurity.isEnabled(), userSecurity.isAccountNonExpired(), userSecurity.isCredentialsNonExpired(), userSecurity.isAccountNonLocked(), null));
