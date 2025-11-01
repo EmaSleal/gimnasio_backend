@@ -1,0 +1,59 @@
+server:
+  port: 9000
+
+spring:
+  application:
+    name: admin-service
+  
+  # Spring Security - Basic Authentication
+  security:
+    user:
+      name: ${ADMIN_USER:admin}
+      password: ${ADMIN_PASSWORD:admin123}
+  
+  # Spring Boot Admin Server Configuration
+  boot:
+    admin:
+      ui:
+        title: "Gym Microservices Monitor"
+        brand: "<img src='assets/img/icon-spring-boot-admin.svg'><span>Gym Admin</span>"
+      
+      # Discovery configuration
+      discovery:
+        enabled: true
+        ignored-services: []
+
+# Eureka Client Configuration
+eureka:
+  client:
+    serviceUrl:
+      defaultZone: http://${EUREKA_HOST:localhost}:8761/eureka/
+    registerWithEureka: true
+    fetchRegistry: true
+  instance:
+    preferIpAddress: false
+    hostname: ${HOSTNAME:localhost}
+    leaseRenewalIntervalInSeconds: 10
+    metadataMap:
+      user.name: ${spring.security.user.name}
+      user.password: ${spring.security.user.password}
+
+# Actuator Configuration
+management:
+  endpoints:
+    web:
+      exposure:
+        include: "*"
+  endpoint:
+    health:
+      show-details: always
+
+# Logging
+logging:
+  level:
+    root: INFO
+    cr.ac.backend.adminservice: DEBUG
+    de.codecentric.boot.admin: DEBUG
+  pattern:
+    console: "%d{yyyy-MM-dd HH:mm:ss} - %msg%n"
+    file: "%d{yyyy-MM-dd HH:mm:ss} [%thread] %-5level %logger{36} - %msg%n"
