@@ -16,7 +16,7 @@ spring:
   zipkin:
     base-url: ${ZIPKIN_BASE_URL:http://localhost:9411}
   datasource: #postgres database configuration
-    url: jdbc:postgresql://${DB_HOST:192.168.100.207}:${DB_PORT:5432}/${DB_NAME_EXERCISE:gym_exercise}
+    url: jdbc:postgresql://${DB_HOST:localhost}:${DB_PORT:5432}/${DB_NAME_EXERCISE:gym_exercise}
     username: ${DB_USERNAME:postgres}
     password: ${DB_PASSWORD}
     driver-class-name: org.postgresql.Driver
@@ -40,7 +40,7 @@ spring:
 eureka:
   client:
     service-url:
-      defaultZone: http://${EUREKA_HOST:192.168.100.207}:${EUREKA_PORT:8761}/eureka/
+      defaultZone: http://${EUREKA_HOST:localhost}:${EUREKA_PORT:8761}/eureka/
       fetch-registry: true
       register-with-eureka: true
 # Actuator Configuration
