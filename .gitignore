@@ -66,3 +66,9 @@ logs/
 
 ### Docker ###
 docker-compose.override.yml
+
+### Monitoring Data ###
+# Prometheus data directory (not config files)
+monitoring/prometheus/data/
+# Grafana data directory (not dashboards)
+monitoring/grafana/data/

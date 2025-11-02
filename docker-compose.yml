@@ -2,10 +2,12 @@ services:
   eureka-server:
     container_name: eureka-server
     build:
-      context: .                # ← raíz del repo
+      context: .
       dockerfile: ./eureka_server/Dockerfile
     ports: ["8761:8761"]
     networks: [spring]
+    environment:
+      - SPRING_PROFILES_ACTIVE=${SPRING_PROFILES_ACTIVE:-docker}
     restart: unless-stopped
 
   config-service:
@@ -15,6 +17,11 @@ services:
       dockerfile: ./config-service/Dockerfile
     ports: ["8889:8889"]
     networks: [spring]
+    environment:
+      - SPRING_PROFILES_ACTIVE=${SPRING_PROFILES_ACTIVE:-docker}
+      - EUREKA_HOST=eureka-server
+      - EUREKA_PORT=8761
+      - CONFIG_GIT_URI=${CONFIG_GIT_URI}
     depends_on: [rabbitmq, eureka-server]
     restart: unless-stopped
 
@@ -25,6 +32,15 @@ services:
       dockerfile: ./api-gateway/Dockerfile
     ports: ["8590:8590"]
     networks: [spring]
+    environment:
+      - SPRING_PROFILES_ACTIVE=${SPRING_PROFILES_ACTIVE:-docker}
+      - EUREKA_HOST=eureka-server
+      - EUREKA_PORT=8761
+      - JWT_SECRET=${JWT_SECRET}
+      - RABBITMQ_HOST=rabbitmq
+      - RABBITMQ_PORT=5672
+      - RABBITMQ_USERNAME=guest
+      - RABBITMQ_PASSWORD=guest
     depends_on: [rabbitmq, eureka-server]
     restart: unless-stopped
 
@@ -35,7 +51,22 @@ services:
       dockerfile: ./authentication/Dockerfile
     ports: ["8583:8583"]
     networks: [spring, postgres]
-    depends_on: [rabbitmq, eureka-server, api-gateway, user-service]
+    environment:
+      - DB_HOST=postgres
+      - DB_PORT=5432
+      - DB_NAME_AUTH=${DB_NAME_AUTH:-gym_authentication}
+      - DB_USERNAME=${DB_USERNAME:-postgres}
+      - DB_PASSWORD=${DB_PASSWORD}
+      - JWT_SECRET=${JWT_SECRET}
+      - JWT_EXPIRATION=${JWT_EXPIRATION:-86400000}
+      - RESEND_API_KEY=${RESEND_API_KEY}
+      - EUREKA_HOST=eureka-server
+      - EUREKA_PORT=8761
+      - RABBITMQ_HOST=rabbitmq
+      - RABBITMQ_PORT=5672
+      - RABBITMQ_USERNAME=guest
+      - RABBITMQ_PASSWORD=guest
+    depends_on: [rabbitmq, eureka-server, api-gateway, user-service, postgres]
     restart: unless-stopped
 
   user-service:
@@ -45,7 +76,55 @@ services:
       dockerfile: ./user-service/Dockerfile
     ports: ["8588:8588"]
     networks: [spring, postgres]
+    environment:
+      - DB_HOST=postgres
+      - DB_PORT=5432
+      - DB_NAME_AUTH=${DB_NAME_AUTH:-gym_authentication}
+      - DB_USERNAME=${DB_USERNAME:-postgres}
+      - DB_PASSWORD=${DB_PASSWORD}
+      - JWT_SECRET=${JWT_SECRET}
+      - JWT_EXPIRATION=${JWT_EXPIRATION:-86400000}
+      - EUREKA_HOST=eureka-server
+      - EUREKA_PORT=8761
+      - RABBITMQ_HOST=rabbitmq
+      - RABBITMQ_PORT=5672
     depends_on: [postgres, rabbitmq, eureka-server, api-gateway]
+    restart: unless-stopped
+
+  workout-service:
+    container_name: workout-service
+    build:
+      context: .
+      dockerfile: ./workout-service/Dockerfile
+    ports: ["8586:8586"]
+    networks: [spring, postgres]
+    environment:
+      - DB_HOST=postgres
+      - DB_PORT=5432
+      - DB_NAME_EXERCISE=${DB_NAME_EXERCISE:-gym_exercise}
+      - DB_USERNAME=${DB_USERNAME:-postgres}
+      - DB_PASSWORD=${DB_PASSWORD}
+      - EUREKA_HOST=eureka-server
+      - EUREKA_PORT=8761
+      - RABBITMQ_HOST=rabbitmq
+      - RABBITMQ_PORT=5672
+    depends_on: [postgres, rabbitmq, eureka-server, api-gateway]
+    restart: unless-stopped
+
+  admin-service:
+    container_name: admin-service
+    build:
+      context: .
+      dockerfile: ./admin-service/Dockerfile
+    ports: ["9000:9000"]
+    networks: [spring]
+    environment:
+      - SPRING_PROFILES_ACTIVE=${SPRING_PROFILES_ACTIVE:-docker}
+      - EUREKA_HOST=eureka-server
+      - EUREKA_PORT=8761
+      - ADMIN_USERNAME=${ADMIN_USERNAME:-admin}
+      - ADMIN_PASSWORD=${ADMIN_PASSWORD}
+    depends_on: [eureka-server]
     restart: unless-stopped
 
   postgres:
@@ -53,10 +132,10 @@ services:
     image: postgres:16
     environment:
       POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: password123
-      POSTGRES_DB: gym_authentication
+      POSTGRES_PASSWORD: ${DB_PASSWORD}
+      POSTGRES_DB: ${DB_NAME_EXERCISE:-docker}
     volumes:
-      - postgres:/var/lib/postgresql/data   # estándar
+      - postgres:/var/lib/postgresql/data
     ports: ["5432:5432"]
     networks: [postgres]
     restart: unless-stopped
@@ -67,9 +146,64 @@ services:
     ports: ["5672:5672","15672:15672"]
     networks: [spring]
 
+  prometheus:
+    image: prom/prometheus:latest
+    container_name: prometheus
+    ports:
+      - "9090:9090"
+    volumes:
+      - ./monitoring/prometheus/prometheus.yml:/etc/prometheus/prometheus.yml
+      - ./monitoring/prometheus/alert.rules.yml:/etc/prometheus/alert.rules.yml
+      - prometheus_data:/prometheus
+    command:
+      - '--config.file=/etc/prometheus/prometheus.yml'
+      - '--storage.tsdb.path=/prometheus'
+      - '--web.console.libraries=/etc/prometheus/console_libraries'
+      - '--web.console.templates=/etc/prometheus/consoles'
+      - '--web.enable-lifecycle'
+    networks: [spring]
+    restart: unless-stopped
+
+  alertmanager:
+    image: prom/alertmanager:latest
+    container_name: alertmanager
+    ports:
+      - "9093:9093"
+    volumes:
+      - ./monitoring/alertmanager/alertmanager.yml:/etc/alertmanager/alertmanager.yml
+      - alertmanager_data:/alertmanager
+    command:
+      - '--config.file=/etc/alertmanager/alertmanager.yml'
+      - '--storage.path=/alertmanager'
+    networks: [spring]
+    restart: unless-stopped
+
+  grafana:
+    image: grafana/grafana:latest
+    container_name: grafana
+    ports:
+      - "3000:3000"
+    environment:
+      - GF_SECURITY_ADMIN_USER=${GRAFANA_ADMIN_USER:-admin}
+      - GF_SECURITY_ADMIN_PASSWORD=${GRAFANA_ADMIN_PASSWORD:-admin}
+      - GF_USERS_ALLOW_SIGN_UP=false
+      - GF_SERVER_ROOT_URL=http://localhost:3000
+      - GF_INSTALL_PLUGINS=grafana-clock-panel,grafana-simple-json-datasource,grafana-piechart-panel
+    volumes:
+      - grafana_data:/var/lib/grafana
+      - ./monitoring/grafana/provisioning:/etc/grafana/provisioning
+      - ./monitoring/grafana/dashboards:/var/lib/grafana/dashboards
+    depends_on:
+      - prometheus
+    networks: [spring]
+    restart: unless-stopped
+
 networks:
   postgres: { driver: bridge }
   spring:   { driver: bridge }
 
 volumes:
   postgres:
+  prometheus_data:
+  grafana_data:
+  alertmanager_data:

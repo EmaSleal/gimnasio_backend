@@ -1,0 +1,171 @@
+# =============================================================================
+# GRAFANA CONTACT POINTS PROVISIONING - Sistema de Gimnasio Backend
+# =============================================================================
+#
+# Este archivo configura los Contact Points (destinos de notificaciones) 
+# para las alertas de Grafana.
+#
+# Tipos de contact points soportados:
+# - email
+# - slack
+# - webhook
+# - pagerduty
+# - telegram
+# - discord
+# - teams (Microsoft Teams)
+#
+# =============================================================================
+
+apiVersion: 1
+
+# Contact Points - Destinos de notificaciones
+contactPoints:
+  # ---------------------------------------------------------------------------
+  # 1. EMAIL - Notificaciones por correo
+  # ---------------------------------------------------------------------------
+  - orgId: 1
+    name: email-alerts
+    receivers:
+      - uid: email-alerts-uid
+        type: email
+        settings:
+          addresses: dev-team@gimnasio-backend.com;ops-team@gimnasio-backend.com
+          singleEmail: false
+        disableResolveMessage: false
+
+  - orgId: 1
+    name: email-critical
+    receivers:
+      - uid: email-critical-uid
+        type: email
+        settings:
+          addresses: oncall@gimnasio-backend.com
+          singleEmail: true
+        disableResolveMessage: false
+
+  # ---------------------------------------------------------------------------
+  # 2. SLACK - Notificaciones a canales de Slack
+  # ---------------------------------------------------------------------------
+  - orgId: 1
+    name: slack-alerts
+    receivers:
+      - uid: slack-alerts-uid
+        type: slack
+        settings:
+          url: https://hooks.slack.com/services/YOUR/SLACK/WEBHOOK
+          recipient: '#alerts-warning'
+          username: Grafana Alerts
+          icon_emoji: ':warning:'
+          mentionUsers: ''
+          mentionGroups: ''
+          mentionChannel: ''
+        disableResolveMessage: false
+
+  - orgId: 1
+    name: slack-critical
+    receivers:
+      - uid: slack-critical-uid
+        type: slack
+        settings:
+          url: https://hooks.slack.com/services/YOUR/SLACK/WEBHOOK
+          recipient: '#alerts-critical'
+          username: Grafana Alerts
+          icon_emoji: ':rotating_light:'
+          mentionUsers: '@oncall'
+          mentionGroups: ''
+          mentionChannel: 'here'
+        disableResolveMessage: false
+
+  # ---------------------------------------------------------------------------
+  # 3. WEBHOOK - Integración con sistemas externos
+  # ---------------------------------------------------------------------------
+  - orgId: 1
+    name: webhook-integration
+    receivers:
+      - uid: webhook-integration-uid
+        type: webhook
+        settings:
+          url: http://localhost:5001/grafana-webhook
+          httpMethod: POST
+          maxAlerts: 0
+        disableResolveMessage: false
+
+  # ---------------------------------------------------------------------------
+  # 4. DISCORD - Notificaciones a servidor de Discord
+  # ---------------------------------------------------------------------------
+  - orgId: 1
+    name: discord-alerts
+    receivers:
+      - uid: discord-alerts-uid
+        type: discord
+        settings:
+          url: https://discord.com/api/webhooks/YOUR/WEBHOOK
+          message: |
+            **Alerta Grafana**
+            {{ range .Alerts }}
+            **Título:** {{ .Labels.alertname }}
+            **Estado:** {{ .Status }}
+            **Descripción:** {{ .Annotations.description }}
+            {{ end }}
+          use_discord_username: true
+        disableResolveMessage: false
+
+  # ---------------------------------------------------------------------------
+  # 5. TELEGRAM - Notificaciones a canal/grupo de Telegram
+  # ---------------------------------------------------------------------------
+  - orgId: 1
+    name: telegram-alerts
+    receivers:
+      - uid: telegram-alerts-uid
+        type: telegram
+        settings:
+          bottoken: YOUR_BOT_TOKEN
+          chatid: YOUR_CHAT_ID
+          message: |
+            🚨 *Alerta Grafana*
+            {{ range .Alerts }}
+            *Alerta:* {{ .Labels.alertname }}
+            *Servicio:* {{ .Labels.job }}
+            *Estado:* {{ .Status }}
+            {{ .Annotations.description }}
+            {{ end }}
+          parse_mode: Markdown
+        disableResolveMessage: false
+
+# =============================================================================
+# NOTAS DE CONFIGURACIÓN:
+# =============================================================================
+#
+# 1. Para usar contact points, debe configurarse primero el SMTP en Grafana:
+#    - Editar grafana.ini o usar variables de entorno
+#    - GF_SMTP_ENABLED=true
+#    - GF_SMTP_HOST=smtp.gmail.com:587
+#    - GF_SMTP_USER=your-email@gmail.com
+#    - GF_SMTP_PASSWORD=your-app-password
+#    - GF_SMTP_FROM_ADDRESS=alerts@gimnasio-backend.com
+#
+# 2. Para Slack:
+#    - Crear Incoming Webhook en: https://api.slack.com/messaging/webhooks
+#    - Reemplazar URL en settings.url
+#    - Crear canales: #alerts-warning, #alerts-critical
+#
+# 3. Para Discord:
+#    - Ir a Server Settings → Integrations → Webhooks
+#    - Crear nuevo webhook y copiar URL
+#
+# 4. Para Telegram:
+#    - Crear bot con @BotFather
+#    - Obtener bot token
+#    - Obtener chat_id del grupo/canal
+#
+# 5. Testing:
+#    - Ir a Alerting → Contact points
+#    - Seleccionar contact point
+#    - Click en "Test" → "Send test notification"
+#
+# 6. Seguridad:
+#    - NO commitear tokens/webhooks reales
+#    - Usar variables de entorno en producción
+#    - Rotar tokens periódicamente
+#
+# =============================================================================

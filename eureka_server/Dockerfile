@@ -1,8 +1,8 @@
 # ---- Build ----
 FROM maven:3.9-eclipse-temurin-21 AS build
 WORKDIR /app
-COPY . .                       # ← copia todo el monorepo (incluye pom padre)
-WORKDIR /app/eureka_server     # ← cambia según el módulo
+COPY . .
+WORKDIR /app/eureka_server
 RUN mvn -q -DskipTests package
 
 # ---- Runtime ----

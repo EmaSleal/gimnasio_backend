@@ -28,6 +28,13 @@ spring:
         locations: classpath:db/migration
         validate-on-migrate: true
         clean-disabled: true  # Disabled for production safety
+    
+    # RabbitMQ Configuration
+    rabbitmq:
+        host: ${RABBITMQ_HOST:localhost}
+        port: ${RABBITMQ_PORT:5672}
+        username: ${RABBITMQ_USERNAME:guest}
+        password: ${RABBITMQ_PASSWORD:guest}
         
     jpa:
         hibernate:
@@ -38,12 +45,13 @@ spring:
                 dialect: org.hibernate.dialect.PostgreSQLDialect
                 format_sql: true
 
-#eureka:
-#  client:
-#    service-url:
-#      defaultZone: http://${EUREKA_HOST:192.168.100.207}:${EUREKA_PORT:8761}/eureka/
-#      fetch-registry: true
-#      register-with-eureka: true
+eureka:
+  client:
+    service-url:
+      defaultZone: http://${EUREKA_HOST:localhost}:${EUREKA_PORT:8761}/eureka/
+      fetch-registry: true
+      register-with-eureka: true
+
 jwt:
     secret: ${JWT_SECRET}
     expiration: ${JWT_EXPIRATION:86400000}

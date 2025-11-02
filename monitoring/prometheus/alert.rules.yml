@@ -1,0 +1,244 @@
+# =============================================================================
+# PROMETHEUS ALERT RULES - Sistema de Gimnasio Backend
+# =============================================================================
+#
+# Este archivo define las reglas de alertas para monitorear la salud y 
+# rendimiento de todos los microservicios del sistema.
+#
+# Categorías de alertas:
+# 1. Disponibilidad - Servicios caídos o no disponibles
+# 2. Recursos - Memoria, CPU, conexiones
+# 3. Rendimiento - Latencia, throughput
+# 4. Errores - Tasa de errores HTTP
+#
+# =============================================================================
+
+groups:
+  # ===========================================================================
+  # GRUPO 1: ALERTAS DE DISPONIBILIDAD
+  # ===========================================================================
+  - name: service_availability
+    interval: 30s
+    rules:
+      # Alerta cuando un servicio está DOWN
+      - alert: ServiceDown
+        expr: up == 0
+        for: 1m
+        labels:
+          severity: critical
+          category: availability
+        annotations:
+          summary: "Servicio {{ $labels.job }} está DOWN"
+          description: "El servicio {{ $labels.job }} en {{ $labels.instance }} ha estado DOWN por más de 1 minuto.\n  Valor actual: {{ $value }}\n  Labels: {{ $labels }}"
+          impact: "El servicio no está disponible para procesar requests"
+          action: "1. Verificar logs: docker-compose logs {{ $labels.job }}\n2. Verificar estado: docker-compose ps {{ $labels.job }}\n3. Reiniciar si es necesario: docker-compose restart {{ $labels.job }}"
+
+      # Alerta cuando un servicio se desregistra de Eureka
+      - alert: ServiceNotRegisteredInEureka
+        expr: eureka_server_registry_count{application="eureka-server"} < 6
+        for: 2m
+        labels:
+          severity: warning
+          category: availability
+        annotations:
+          summary: "Servicios desregistrados en Eureka"
+          description: "Hay menos de 6 servicios registrados en Eureka. Actual: {{ $value }}\n  Se esperan: config-service, api-gateway, authentication, user-service, workout-service, admin-service"
+          action: "Ejecutar script de verificación: ./scripts/verify-eureka-registration.ps1"
+
+  # ===========================================================================
+  # GRUPO 2: ALERTAS DE RECURSOS - MEMORIA
+  # ===========================================================================
+  - name: memory_alerts
+    interval: 30s
+    rules:
+      # Alerta cuando el uso de memoria JVM supera el 90%
+      - alert: HighMemoryUsage
+        expr: (jvm_memory_used_bytes{area="heap"} / jvm_memory_max_bytes{area="heap"}) * 100 > 90
+        for: 2m
+        labels:
+          severity: warning
+          category: resources
+        annotations:
+          summary: "Uso de memoria alto en {{ $labels.job }}"
+          description: "El servicio {{ $labels.job }} está usando {{ $value | humanizePercentage }} de memoria heap.\n  Instance: {{ $labels.instance }}\n  Área: {{ $labels.area }}"
+          impact: "El servicio puede experimentar GC frecuentes o OutOfMemoryError"
+          action: "1. Revisar memory leaks\n2. Analizar heap dump\n3. Considerar aumentar -Xmx en Dockerfile\n4. Verificar logs de GC: docker-compose logs {{ $labels.job }} | Select-String 'GC'"
+
+      # Alerta crítica cuando la memoria está al 95%
+      - alert: CriticalMemoryUsage
+        expr: (jvm_memory_used_bytes{area="heap"} / jvm_memory_max_bytes{area="heap"}) * 100 > 95
+        for: 1m
+        labels:
+          severity: critical
+          category: resources
+        annotations:
+          summary: "⚠️ CRÍTICO: Memoria casi agotada en {{ $labels.job }}"
+          description: "El servicio {{ $labels.job }} está usando {{ $value | humanizePercentage }} de memoria heap (CRÍTICO).\n  Instance: {{ $labels.instance }}"
+          impact: "Inminente OutOfMemoryError, servicio puede caerse"
+          action: "ACCIÓN INMEDIATA:\n1. Reiniciar servicio: docker-compose restart {{ $labels.job }}\n2. Generar heap dump antes de reiniciar si es posible\n3. Revisar logs de emergencia"
+
+  # ===========================================================================
+  # GRUPO 3: ALERTAS DE RENDIMIENTO - LATENCIA
+  # ===========================================================================
+  - name: performance_alerts
+    interval: 30s
+    rules:
+      # Alerta cuando el percentil 95 de latencia supera 1 segundo
+      - alert: HighLatencyP95
+        expr: histogram_quantile(0.95, sum(rate(http_server_requests_seconds_bucket{uri!~"/actuator.*"}[5m])) by (job, uri, le)) > 1
+        for: 3m
+        labels:
+          severity: warning
+          category: performance
+        annotations:
+          summary: "Latencia alta (p95) en {{ $labels.job }}"
+          description: "El percentil 95 de latencia en {{ $labels.job }} es {{ $value }}s (>1s).\n  Endpoint: {{ $labels.uri }}\n  Método: {{ $labels.method }}"
+          impact: "Los usuarios están experimentando respuestas lentas"
+          action: "1. Identificar endpoint lento\n2. Revisar queries de base de datos\n3. Verificar conexiones externas\n4. Analizar logs: docker-compose logs {{ $labels.job }} | Select-String 'slow'"
+
+      # Alerta cuando el percentil 99 supera 3 segundos (crítico)
+      - alert: VeryHighLatencyP99
+        expr: histogram_quantile(0.99, sum(rate(http_server_requests_seconds_bucket{uri!~"/actuator.*"}[5m])) by (job, uri, le)) > 3
+        for: 2m
+        labels:
+          severity: critical
+          category: performance
+        annotations:
+          summary: "⚠️ Latencia crítica (p99) en {{ $labels.job }}"
+          description: "El percentil 99 de latencia en {{ $labels.job }} es {{ $value }}s (>3s).\n  Endpoint: {{ $labels.uri }}"
+          impact: "Experiencia de usuario severamente degradada"
+          action: "INVESTIGAR INMEDIATAMENTE:\n1. Verificar base de datos\n2. Revisar conexiones de red\n3. Considerar escalar horizontalmente"
+
+  # ===========================================================================
+  # GRUPO 4: ALERTAS DE ERRORES HTTP
+  # ===========================================================================
+  - name: error_rate_alerts
+    interval: 30s
+    rules:
+      # Alerta cuando la tasa de errores 5xx supera 10 por minuto
+      - alert: HighErrorRate5xx
+        expr: sum(rate(http_server_requests_seconds_count{status=~"5.."}[1m])) by (job) > 10
+        for: 2m
+        labels:
+          severity: warning
+          category: errors
+        annotations:
+          summary: "Tasa alta de errores 5xx en {{ $labels.job }}"
+          description: "El servicio {{ $labels.job }} está generando {{ $value }} errores 5xx por minuto.\n  Threshold: 10 errores/min"
+          impact: "El servicio está fallando en procesar requests"
+          action: "1. Revisar logs de errores: docker-compose logs {{ $labels.job }} | Select-String 'ERROR'\n2. Verificar excepciones\n3. Revisar conexiones a base de datos\n4. Verificar dependencias externas"
+
+      # Alerta cuando la tasa de errores 4xx supera 50 por minuto
+      - alert: HighErrorRate4xx
+        expr: sum(rate(http_server_requests_seconds_count{status=~"4.."}[1m])) by (job) > 50
+        for: 3m
+        labels:
+          severity: info
+          category: errors
+        annotations:
+          summary: "Tasa alta de errores 4xx en {{ $labels.job }}"
+          description: "El servicio {{ $labels.job }} está generando {{ $value }} errores 4xx por minuto.\n  Threshold: 50 errores/min"
+          impact: "Posibles problemas de autenticación, validación o requests malformados"
+          action: "1. Analizar patrones de errores\n2. Verificar autenticación JWT\n3. Revisar validaciones de entrada"
+
+  # ===========================================================================
+  # GRUPO 5: ALERTAS DE BASE DE DATOS
+  # ===========================================================================
+  - name: database_alerts
+    interval: 30s
+    rules:
+      # Alerta cuando las conexiones activas a la BD superan el 80%
+      - alert: HighDatabaseConnectionUsage
+        expr: (hikaricp_connections_active / hikaricp_connections_max) * 100 > 80
+        for: 2m
+        labels:
+          severity: warning
+          category: database
+        annotations:
+          summary: "Uso alto de conexiones de BD en {{ $labels.job }}"
+          description: "El pool de conexiones está al {{ $value | humanizePercentage }} de capacidad.\n  Servicio: {{ $labels.job }}\n  Pool: {{ $labels.pool }}"
+          impact: "Nuevas requests pueden quedar en espera por conexiones disponibles"
+          action: "1. Revisar queries lentas\n2. Verificar transacciones no cerradas\n3. Considerar aumentar pool size\n4. Analizar: docker-compose logs {{ $labels.job }} | Select-String 'HikariCP'"
+
+      # Alerta cuando hay muchas conexiones pendientes
+      - alert: HighDatabaseConnectionPending
+        expr: hikaricp_connections_pending > 5
+        for: 1m
+        labels:
+          severity: warning
+          category: database
+        annotations:
+          summary: "Conexiones de BD pendientes en {{ $labels.job }}"
+          description: "Hay {{ $value }} conexiones pendientes esperando disponibilidad.\n  Servicio: {{ $labels.job }}"
+          impact: "Requests esperando por conexiones, incremento de latencia"
+          action: "1. Aumentar pool de conexiones\n2. Optimizar queries\n3. Verificar locks en PostgreSQL"
+
+  # ===========================================================================
+  # GRUPO 6: ALERTAS DE GARBAGE COLLECTION
+  # ===========================================================================
+  - name: garbage_collection_alerts
+    interval: 30s
+    rules:
+      # Alerta cuando el GC consume mucho tiempo
+      - alert: HighGCTime
+        expr: rate(jvm_gc_pause_seconds_sum[1m]) / rate(jvm_gc_pause_seconds_count[1m]) > 0.5
+        for: 2m
+        labels:
+          severity: warning
+          category: resources
+        annotations:
+          summary: "Tiempo alto de GC en {{ $labels.job }}"
+          description: "El tiempo promedio de pausa de GC es {{ $value }}s (>0.5s).\n  Servicio: {{ $labels.job }}\n  GC Type: {{ $labels.action }}"
+          impact: "Pausas frecuentes afectan el rendimiento"
+          action: "1. Revisar configuración de GC\n2. Analizar memory leaks\n3. Considerar aumentar heap size\n4. Evaluar cambiar algoritmo de GC"
+
+  # ===========================================================================
+  # GRUPO 7: ALERTAS DE CIRCUIT BREAKER (API Gateway)
+  # ===========================================================================
+  - name: circuit_breaker_alerts
+    interval: 30s
+    rules:
+      # Alerta cuando un circuit breaker está abierto
+      - alert: CircuitBreakerOpen
+        expr: resilience4j_circuitbreaker_state{state="open"} == 1
+        for: 1m
+        labels:
+          severity: critical
+          category: resilience
+        annotations:
+          summary: "Circuit Breaker abierto en {{ $labels.job }}"
+          description: "El circuit breaker '{{ $labels.name }}' está ABIERTO.\n  Servicio: {{ $labels.job }}"
+          impact: "Las requests a este servicio están siendo rechazadas automáticamente"
+          action: "1. Verificar servicio downstream\n2. Revisar logs del servicio protegido\n3. El circuit breaker se cerrará automáticamente cuando el servicio se recupere"
+
+      # Alerta cuando hay muchos fallos en circuit breaker
+      - alert: HighCircuitBreakerFailureRate
+        expr: rate(resilience4j_circuitbreaker_failure_rate[2m]) > 0.5
+        for: 2m
+        labels:
+          severity: warning
+          category: resilience
+        annotations:
+          summary: "Alta tasa de fallos en Circuit Breaker de {{ $labels.job }}"
+          description: "El circuit breaker tiene una tasa de fallos de {{ $value | humanizePercentage }}.\n  Nombre: {{ $labels.name }}"
+          impact: "El circuit breaker puede abrirse pronto"
+          action: "Investigar causa de fallos en servicio downstream"
+
+# =============================================================================
+# DOCUMENTACIÓN DE SEVERIDADES:
+# =============================================================================
+#
+# critical: Requiere atención inmediata, afecta disponibilidad o datos
+# warning:  Requiere atención pronto, puede escalar a crítico
+# info:     Informativo, monitorear tendencias
+#
+# =============================================================================
+# INTEGRACIÓN CON ALERTMANAGER:
+# =============================================================================
+#
+# Para que estas alertas envíen notificaciones, configurar:
+# 1. alertmanager.yml con contact points (email, Slack, PagerDuty)
+# 2. Routing rules basadas en labels (severity, category)
+# 3. Inhibition rules para evitar spam de alertas
+#
+# =============================================================================

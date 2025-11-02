@@ -1,0 +1,147 @@
+# =============================================================================
+# GRAFANA NOTIFICATION POLICIES - Sistema de Gimnasio Backend
+# =============================================================================
+#
+# Este archivo configura las políticas de enrutamiento de alertas en Grafana.
+# Define cómo se agrupan, enrutan y notifican las alertas según sus labels.
+#
+# =============================================================================
+
+apiVersion: 1
+
+# Política de notificación raíz
+policies:
+  - orgId: 1
+    receiver: email-alerts  # Receiver por defecto
+    group_by: ['alertname', 'grafana_folder']
+    group_wait: 10s
+    group_interval: 5m
+    repeat_interval: 4h
+    
+    # Rutas específicas (matchers)
+    routes:
+      # -----------------------------------------------------------------------
+      # RUTA 1: Alertas CRÍTICAS
+      # -----------------------------------------------------------------------
+      - receiver: slack-critical
+        object_matchers:
+          - ['severity', '=', 'critical']
+        group_by: ['alertname']
+        group_wait: 0s
+        group_interval: 1m
+        repeat_interval: 2h
+        continue: true  # También enviar a email-critical
+        
+      - receiver: email-critical
+        object_matchers:
+          - ['severity', '=', 'critical']
+        group_wait: 0s
+        repeat_interval: 2h
+        
+      # -----------------------------------------------------------------------
+      # RUTA 2: Alertas de WARNING
+      # -----------------------------------------------------------------------
+      - receiver: slack-alerts
+        object_matchers:
+          - ['severity', '=', 'warning']
+        group_by: ['alertname', 'job']
+        group_wait: 30s
+        group_interval: 10m
+        repeat_interval: 12h
+        
+      # -----------------------------------------------------------------------
+      # RUTA 3: Alertas de disponibilidad (Service Down)
+      # -----------------------------------------------------------------------
+      - receiver: slack-critical
+        object_matchers:
+          - ['alertname', '=', 'ServiceDown']
+        group_by: ['job']
+        group_wait: 0s
+        group_interval: 1m
+        repeat_interval: 1h
+        continue: true
+        
+      - receiver: email-critical
+        object_matchers:
+          - ['alertname', '=', 'ServiceDown']
+        group_wait: 0s
+        repeat_interval: 1h
+        
+      # -----------------------------------------------------------------------
+      # RUTA 4: Alertas de memoria
+      # -----------------------------------------------------------------------
+      - receiver: slack-alerts
+        object_matchers:
+          - ['alertname', '=~', 'High.*Memory.*']
+        group_by: ['job']
+        group_wait: 1m
+        repeat_interval: 6h
+        
+      # -----------------------------------------------------------------------
+      # RUTA 5: Alertas de base de datos
+      # -----------------------------------------------------------------------
+      - receiver: email-alerts
+        object_matchers:
+          - ['alertname', '=~', '.*Database.*']
+        group_by: ['job']
+        group_wait: 1m
+        repeat_interval: 8h
+
+# =============================================================================
+# MUTE TIMINGS - Períodos de silencio
+# =============================================================================
+# Configurar períodos donde NO se envían notificaciones
+# (útil para mantenimientos programados, fuera de horario laboral, etc.)
+
+muteTimes:
+  - orgId: 1
+    name: maintenance-window
+    time_intervals:
+      # Todos los sábados de 2am a 6am (UTC)
+      - times:
+          - start_time: '02:00'
+            end_time: '06:00'
+        weekdays: ['saturday']
+        
+  - orgId: 1
+    name: non-business-hours
+    time_intervals:
+      # Fuera de horario laboral: 8pm a 8am
+      - times:
+          - start_time: '20:00'
+            end_time: '23:59'
+          - start_time: '00:00'
+            end_time: '08:00'
+        weekdays: ['monday', 'tuesday', 'wednesday', 'thursday', 'friday']
+      # Fin de semana completo
+      - weekdays: ['saturday', 'sunday']
+
+# =============================================================================
+# NOTAS DE CONFIGURACIÓN:
+# =============================================================================
+#
+# 1. Matchers:
+#    - object_matchers usa formato: ['label', 'operator', 'value']
+#    - Operadores: '=', '!=', '=~', '!~'
+#    - '=~' para regex, '=' para exacto
+#
+# 2. Timeouts:
+#    - group_wait: Espera antes de enviar primera notificación
+#    - group_interval: Tiempo entre notificaciones del mismo grupo
+#    - repeat_interval: Tiempo antes de reenviar alerta activa
+#
+# 3. Continue:
+#    - true: Continuar evaluando otras rutas
+#    - false: Detener después de esta ruta
+#
+# 4. Mute Timings:
+#    - Se pueden asociar a rutas específicas
+#    - Para asociar: agregar 'mute_time_intervals: [maintenance-window]'
+#    - Útil para evitar spam durante mantenimientos
+#
+# 5. Testing:
+#    - Ir a Alerting → Notification policies
+#    - Verificar árbol de routing
+#    - Simular alertas con diferentes labels
+#
+# =============================================================================

@@ -1,0 +1,119 @@
+# =============================================================================
+# GRAFANA DATASOURCE CONFIGURATION - Prometheus
+# =============================================================================
+#
+# Este archivo configura automáticamente Prometheus como datasource en Grafana
+# mediante el sistema de provisioning.
+#
+# Documentación oficial:
+# https://grafana.com/docs/grafana/latest/administration/provisioning/#data-sources
+#
+# =============================================================================
+
+apiVersion: 1
+
+# Lista de datasources a configurar
+datasources:
+  # Prometheus - Datasource principal para métricas
+  - name: Prometheus
+    type: prometheus
+    
+    # Configuración de acceso
+    access: proxy  # Grafana hace proxy de las requests (recomendado)
+    
+    # URL del servidor Prometheus
+    # Usa el nombre del contenedor Docker para resolución DNS interna
+    url: http://prometheus:9090
+    
+    # Autenticación básica (deshabilitada para Prometheus)
+    basicAuth: false
+    
+    # Configuración de TLS/SSL (deshabilitada en desarrollo)
+    withCredentials: false
+    isDefault: true  # Hacer este datasource el predeterminado
+    
+    # Versión del datasource (1 = estable)
+    version: 1
+    
+    # Editable desde la UI de Grafana
+    editable: true
+    
+    # Opciones JSON específicas de Prometheus
+    jsonData:
+      # Método HTTP para queries
+      httpMethod: POST
+      
+      # Timeout para queries (en segundos)
+      queryTimeout: '60s'
+      
+      # Timeout para conexión HTTP
+      timeInterval: '15s'
+      
+      # Habilitar métricas de ejemplo en query builder
+      exemplarTraceIdDestinations: []
+      
+      # Configuración de cache de queries
+      incrementalQuerying: false
+      
+      # Custom query parameters (opcional)
+      customQueryParameters: ''
+      
+      # Deshabilitar límite de métricas
+      disableMetricsLookup: false
+      
+      # Configuración de Prometheus
+      prometheusType: 'Prometheus'
+      prometheusVersion: '2.x'
+      
+      # Habilitar alerting desde este datasource
+      manageAlerts: true
+      
+      # Cache de datos
+      cacheLevel: 'Low'
+
+# =============================================================================
+# NOTAS DE CONFIGURACIÓN:
+# =============================================================================
+#
+# URL:
+# - Usa 'http://prometheus:9090' en entorno Docker
+# - Docker Compose resuelve 'prometheus' al contenedor correcto
+# - Ambos servicios deben estar en la misma red Docker (spring)
+#
+# ACCESS MODES:
+# - 'proxy': Grafana hace proxy (recomendado, evita CORS)
+# - 'direct': Browser se conecta directamente (requiere CORS)
+#
+# IS DEFAULT:
+# - true: Este datasource se usa por defecto en dashboards nuevos
+# - Solo un datasource puede ser default
+#
+# EDITABLE:
+# - true: Permite editar desde UI (útil para desarrollo)
+# - false: Solo configurable via provisioning (recomendado en producción)
+#
+# HTTP METHOD:
+# - POST: Recomendado para queries largas (evita límite de URL)
+# - GET: Más simple, puede tener problemas con queries complejas
+#
+# =============================================================================
+# TROUBLESHOOTING:
+# =============================================================================
+#
+# Error "Bad Gateway" o "Connection Refused":
+# 1. Verificar que Prometheus esté corriendo: docker-compose ps prometheus
+# 2. Verificar logs de Prometheus: docker-compose logs prometheus
+# 3. Verificar que ambos estén en red 'spring': docker network inspect gimnasio_backend_spring
+# 4. Probar conectividad: docker exec grafana wget -O- http://prometheus:9090/api/v1/status/config
+#
+# Datasource no aparece:
+# 1. Verificar que el directorio esté montado correctamente en docker-compose.yml
+# 2. Verificar logs de Grafana: docker-compose logs grafana | grep -i provision
+# 3. Reiniciar Grafana: docker-compose restart grafana
+#
+# Queries lentas:
+# 1. Aumentar queryTimeout en jsonData
+# 2. Optimizar queries PromQL
+# 3. Reducir rango de tiempo en dashboards
+#
+# =============================================================================

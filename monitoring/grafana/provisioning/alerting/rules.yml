@@ -1,0 +1,297 @@
+# =============================================================================
+# GRAFANA ALERT RULES - Sistema de Gimnasio Backend
+# =============================================================================
+#
+# Este archivo define las reglas de alertas específicas de Grafana.
+# Complementan las alertas de Prometheus con alertas basadas en queries 
+# de Grafana que pueden usar múltiples datasources.
+#
+# =============================================================================
+
+apiVersion: 1
+
+# Grupos de reglas de alertas
+groups:
+  # ===========================================================================
+  # GRUPO 1: Alertas de Disponibilidad de Servicios
+  # ===========================================================================
+  - orgId: 1
+    name: Service Availability - 1m
+    folder: Alertas Sistema
+    interval: 1m
+    rules:
+      # Alerta cuando un servicio está DOWN
+      - uid: service_down_grafana
+        title: Servicio Caído
+        condition: C
+        data:
+          - refId: A
+            relativeTimeRange:
+              from: 60
+              to: 0
+            datasourceUid: prometheus
+            model:
+              expr: up{job=~".*-service|api-gateway|authentication|admin-service"}
+              refId: A
+          - refId: B
+            datasourceUid: __expr__
+            model:
+              conditions:
+                - evaluator:
+                    params: [0, 0]
+                    type: lt
+                  operator:
+                    type: and
+                  query:
+                    params: []
+                  reducer:
+                    params: []
+                    type: avg
+                  type: query
+              expression: A
+              refId: B
+              type: classic_conditions
+          - refId: C
+            datasourceUid: __expr__
+            model:
+              expression: B
+              refId: C
+              type: threshold
+              conditions:
+                - evaluator:
+                    params: [0.5]
+                    type: lt
+                  operator:
+                    type: and
+        dashboardUid: ''
+        panelId: 0
+        noDataState: Alerting
+        execErrState: Alerting
+        for: 1m
+        annotations:
+          description: 'El servicio {{ $labels.job }} en {{ $labels.instance }} está DOWN'
+          summary: 'Servicio {{ $labels.job }} no disponible'
+        labels:
+          severity: critical
+          category: availability
+
+  # ===========================================================================
+  # GRUPO 2: Alertas de Memoria
+  # ===========================================================================
+  - orgId: 1
+    name: Memory Alerts - 2m
+    folder: Alertas Sistema
+    interval: 2m
+    rules:
+      # Alerta de memoria alta (>90%)
+      - uid: high_memory_grafana
+        title: Uso Alto de Memoria
+        condition: C
+        data:
+          - refId: A
+            relativeTimeRange:
+              from: 300
+              to: 0
+            datasourceUid: prometheus
+            model:
+              expr: (jvm_memory_used_bytes{area="heap"} / jvm_memory_max_bytes{area="heap"}) * 100
+              refId: A
+          - refId: C
+            datasourceUid: __expr__
+            model:
+              expression: A
+              refId: C
+              type: threshold
+              conditions:
+                - evaluator:
+                    params: [90]
+                    type: gt
+                  operator:
+                    type: and
+        dashboardUid: ''
+        panelId: 0
+        noDataState: NoData
+        execErrState: Error
+        for: 2m
+        annotations:
+          description: 'El servicio {{ $labels.job }} está usando {{ $value }}% de memoria heap'
+          summary: 'Memoria alta en {{ $labels.job }}'
+          impact: 'Posible OutOfMemoryError inminente'
+          action: 'Revisar heap dump y considerar aumentar memoria'
+        labels:
+          severity: warning
+          category: resources
+
+  # ===========================================================================
+  # GRUPO 3: Alertas de Latencia
+  # ===========================================================================
+  - orgId: 1
+    name: Performance Alerts - 3m
+    folder: Alertas Sistema
+    interval: 3m
+    rules:
+      # Alerta de latencia alta (p95 > 1s)
+      - uid: high_latency_p95_grafana
+        title: Latencia Alta P95
+        condition: C
+        data:
+          - refId: A
+            relativeTimeRange:
+              from: 300
+              to: 0
+            datasourceUid: prometheus
+            model:
+              expr: histogram_quantile(0.95, sum(rate(http_server_requests_seconds_bucket{uri!~"/actuator.*"}[5m])) by (job, uri, le))
+              refId: A
+          - refId: C
+            datasourceUid: __expr__
+            model:
+              expression: A
+              refId: C
+              type: threshold
+              conditions:
+                - evaluator:
+                    params: [1]
+                    type: gt
+                  operator:
+                    type: and
+        dashboardUid: ''
+        panelId: 0
+        noDataState: NoData
+        execErrState: Error
+        for: 3m
+        annotations:
+          description: 'El percentil 95 de latencia en {{ $labels.job }} es {{ $value }}s (>1s) para {{ $labels.uri }}'
+          summary: 'Latencia alta en {{ $labels.job }}'
+          impact: 'Experiencia de usuario degradada'
+          action: 'Revisar queries de base de datos y conexiones externas'
+        labels:
+          severity: warning
+          category: performance
+
+  # ===========================================================================
+  # GRUPO 4: Alertas de Tasa de Errores
+  # ===========================================================================
+  - orgId: 1
+    name: Error Rate Alerts - 2m
+    folder: Alertas Sistema
+    interval: 2m
+    rules:
+      # Alerta de errores 5xx altos
+      - uid: high_error_rate_5xx_grafana
+        title: Tasa Alta de Errores 5xx
+        condition: C
+        data:
+          - refId: A
+            relativeTimeRange:
+              from: 120
+              to: 0
+            datasourceUid: prometheus
+            model:
+              expr: sum(rate(http_server_requests_seconds_count{status=~"5.."}[1m])) by (job)
+              refId: A
+          - refId: C
+            datasourceUid: __expr__
+            model:
+              expression: A
+              refId: C
+              type: threshold
+              conditions:
+                - evaluator:
+                    params: [10]
+                    type: gt
+                  operator:
+                    type: and
+        dashboardUid: ''
+        panelId: 0
+        noDataState: NoData
+        execErrState: Error
+        for: 2m
+        annotations:
+          description: 'El servicio {{ $labels.job }} está generando {{ $value }} errores 5xx por minuto'
+          summary: 'Tasa alta de errores en {{ $labels.job }}'
+          impact: 'El servicio está fallando en procesar requests'
+          action: 'Revisar logs de errores y verificar conexiones a base de datos'
+        labels:
+          severity: warning
+          category: errors
+
+  # ===========================================================================
+  # GRUPO 5: Alertas de Base de Datos
+  # ===========================================================================
+  - orgId: 1
+    name: Database Alerts - 2m
+    folder: Alertas Sistema
+    interval: 2m
+    rules:
+      # Alerta de uso alto de conexiones de BD
+      - uid: high_db_connections_grafana
+        title: Uso Alto de Conexiones de BD
+        condition: C
+        data:
+          - refId: A
+            relativeTimeRange:
+              from: 300
+              to: 0
+            datasourceUid: prometheus
+            model:
+              expr: (hikaricp_connections_active / hikaricp_connections_max) * 100
+              refId: A
+          - refId: C
+            datasourceUid: __expr__
+            model:
+              expression: A
+              refId: C
+              type: threshold
+              conditions:
+                - evaluator:
+                    params: [80]
+                    type: gt
+                  operator:
+                    type: and
+        dashboardUid: ''
+        panelId: 0
+        noDataState: NoData
+        execErrState: Error
+        for: 2m
+        annotations:
+          description: 'El pool de conexiones de {{ $labels.job }} está al {{ $value }}% de capacidad'
+          summary: 'Uso alto de conexiones en {{ $labels.job }}'
+          impact: 'Nuevas requests pueden quedar en espera'
+          action: 'Revisar queries lentas y considerar aumentar pool size'
+        labels:
+          severity: warning
+          category: database
+
+# =============================================================================
+# NOTAS DE CONFIGURACIÓN:
+# =============================================================================
+#
+# 1. datasourceUid:
+#    - 'prometheus': UID del datasource de Prometheus
+#    - '__expr__': Expresiones de Grafana (thresholds, reduce, math)
+#
+# 2. relativeTimeRange:
+#    - from: segundos hacia atrás desde 'to'
+#    - to: 0 significa "ahora"
+#    - from: 300 = últimos 5 minutos
+#
+# 3. Condition types:
+#    - threshold: Comparar valor con umbral
+#    - classic_conditions: Condiciones complejas (AND/OR)
+#    - reduce: Reducir series (avg, min, max, sum)
+#    - math: Operaciones matemáticas
+#
+# 4. States:
+#    - noDataState: Qué hacer si no hay datos (NoData, Alerting, OK)
+#    - execErrState: Qué hacer si hay error (Error, Alerting, OK)
+#
+# 5. For duration:
+#    - Tiempo que debe cumplirse la condición antes de disparar
+#    - Evita alertas por picos momentáneos
+#
+# 6. Folder:
+#    - Las alertas se agrupan en carpetas en la UI
+#    - Crear carpeta "Alertas Sistema" manualmente o via provisioning
+#
+# =============================================================================

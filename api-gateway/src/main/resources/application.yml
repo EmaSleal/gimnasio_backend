@@ -52,6 +52,11 @@ spring:
             enabled: true
     zipkin:
         base-url: ${ZIPKIN_BASE_URL:http://localhost:9411}
+    rabbitmq:
+      host: ${RABBITMQ_HOST:localhost}
+      port: ${RABBITMQ_PORT:5672}
+      username: ${RABBITMQ_USERNAME:guest}
+      password: ${RABBITMQ_PASSWORD:guest}
 
 web:
   cors:
@@ -69,3 +74,33 @@ eureka:
       register-with-eureka: true
 jwt:
   secret: ${JWT_SECRET}
+
+# Actuator Configuration
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info,metrics,prometheus
+      base-path: /actuator
+  endpoint:
+    health:
+      show-details: when-authorized
+      probes:
+        enabled: true
+  prometheus:
+    metrics:
+      export:
+        enabled: true
+  info:
+    env:
+      enabled: true
+
+# Application Info
+info:
+  app:
+    name: API Gateway
+    description: API Gateway with routing and load balancing
+    version: 1.0.0
+    encoding: ${project.build.sourceEncoding:UTF-8}
+    java:
+      version: ${java.version:21}
