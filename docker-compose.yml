@@ -1,3 +1,18 @@
+# ========================================
+# JVM Optimization Template
+# ========================================
+x-jvm-opts: &jvm_opts
+  JAVA_TOOL_OPTIONS: >-
+    -XX:+UseContainerSupport
+    -XX:InitialRAMPercentage=10
+    -XX:MaxRAMPercentage=70
+    -XX:MaxMetaspaceSize=128m
+    -XX:+UseG1GC
+    -XX:+ExitOnOutOfMemoryError
+    -Dspring.main.lazy-initialization=true
+    -Dspring.jmx.enabled=false
+    -Dlogging.level.root=INFO
+
 services:
   eureka-server:
     container_name: eureka-server
@@ -6,8 +21,12 @@ services:
       dockerfile: ./eureka_server/Dockerfile
     ports: ["8761:8761"]
     networks: [spring]
+    mem_limit: 512m
+    mem_reservation: 384m
+    oom_score_adj: 500
     environment:
-      - SPRING_PROFILES_ACTIVE=${SPRING_PROFILES_ACTIVE:-docker}
+      <<: *jvm_opts
+      SPRING_PROFILES_ACTIVE: ${SPRING_PROFILES_ACTIVE:-docker}
     restart: unless-stopped
 
   config-service:
@@ -17,11 +36,15 @@ services:
       dockerfile: ./config-service/Dockerfile
     ports: ["8889:8889"]
     networks: [spring]
+    mem_limit: 512m
+    mem_reservation: 384m
+    oom_score_adj: 500
     environment:
-      - SPRING_PROFILES_ACTIVE=${SPRING_PROFILES_ACTIVE:-docker}
-      - EUREKA_HOST=eureka-server
-      - EUREKA_PORT=8761
-      - CONFIG_GIT_URI=${CONFIG_GIT_URI}
+      <<: *jvm_opts
+      SPRING_PROFILES_ACTIVE: ${SPRING_PROFILES_ACTIVE:-docker}
+      EUREKA_HOST: eureka-server
+      EUREKA_PORT: 8761
+      CONFIG_GIT_URI: ${CONFIG_GIT_URI}
     depends_on: [rabbitmq, eureka-server]
     restart: unless-stopped
 
@@ -32,15 +55,19 @@ services:
       dockerfile: ./api-gateway/Dockerfile
     ports: ["8590:8590"]
     networks: [spring]
+    mem_limit: 768m
+    mem_reservation: 512m
+    oom_score_adj: 300
     environment:
-      - SPRING_PROFILES_ACTIVE=${SPRING_PROFILES_ACTIVE:-docker}
-      - EUREKA_HOST=eureka-server
-      - EUREKA_PORT=8761
-      - JWT_SECRET=${JWT_SECRET}
-      - RABBITMQ_HOST=rabbitmq
-      - RABBITMQ_PORT=5672
-      - RABBITMQ_USERNAME=guest
-      - RABBITMQ_PASSWORD=guest
+      <<: *jvm_opts
+      SPRING_PROFILES_ACTIVE: ${SPRING_PROFILES_ACTIVE:-docker}
+      EUREKA_HOST: eureka-server
+      EUREKA_PORT: 8761
+      JWT_SECRET: ${JWT_SECRET}
+      RABBITMQ_HOST: rabbitmq
+      RABBITMQ_PORT: 5672
+      RABBITMQ_USERNAME: guest
+      RABBITMQ_PASSWORD: guest
     depends_on: [rabbitmq, eureka-server]
     restart: unless-stopped
 
@@ -51,21 +78,25 @@ services:
       dockerfile: ./authentication/Dockerfile
     ports: ["8583:8583"]
     networks: [spring, postgres]
+    mem_limit: 768m
+    mem_reservation: 512m
+    oom_score_adj: 300
     environment:
-      - DB_HOST=postgres
-      - DB_PORT=5432
-      - DB_NAME_AUTH=${DB_NAME_AUTH:-gym_authentication}
-      - DB_USERNAME=${DB_USERNAME:-postgres}
-      - DB_PASSWORD=${DB_PASSWORD}
-      - JWT_SECRET=${JWT_SECRET}
-      - JWT_EXPIRATION=${JWT_EXPIRATION:-86400000}
-      - RESEND_API_KEY=${RESEND_API_KEY}
-      - EUREKA_HOST=eureka-server
-      - EUREKA_PORT=8761
-      - RABBITMQ_HOST=rabbitmq
-      - RABBITMQ_PORT=5672
-      - RABBITMQ_USERNAME=guest
-      - RABBITMQ_PASSWORD=guest
+      <<: *jvm_opts
+      DB_HOST: postgres
+      DB_PORT: 5432
+      DB_NAME_AUTH: ${DB_NAME_AUTH:-gym_authentication}
+      DB_USERNAME: ${DB_USERNAME:-postgres}
+      DB_PASSWORD: ${DB_PASSWORD}
+      JWT_SECRET: ${JWT_SECRET}
+      JWT_EXPIRATION: ${JWT_EXPIRATION:-86400000}
+      RESEND_API_KEY: ${RESEND_API_KEY}
+      EUREKA_HOST: eureka-server
+      EUREKA_PORT: 8761
+      RABBITMQ_HOST: rabbitmq
+      RABBITMQ_PORT: 5672
+      RABBITMQ_USERNAME: guest
+      RABBITMQ_PASSWORD: guest
     depends_on: [rabbitmq, eureka-server, api-gateway, user-service, postgres]
     restart: unless-stopped
 
@@ -76,18 +107,22 @@ services:
       dockerfile: ./user-service/Dockerfile
     ports: ["8588:8588"]
     networks: [spring, postgres]
+    mem_limit: 768m
+    mem_reservation: 512m
+    oom_score_adj: 300
     environment:
-      - DB_HOST=postgres
-      - DB_PORT=5432
-      - DB_NAME_AUTH=${DB_NAME_AUTH:-gym_authentication}
-      - DB_USERNAME=${DB_USERNAME:-postgres}
-      - DB_PASSWORD=${DB_PASSWORD}
-      - JWT_SECRET=${JWT_SECRET}
-      - JWT_EXPIRATION=${JWT_EXPIRATION:-86400000}
-      - EUREKA_HOST=eureka-server
-      - EUREKA_PORT=8761
-      - RABBITMQ_HOST=rabbitmq
-      - RABBITMQ_PORT=5672
+      <<: *jvm_opts
+      DB_HOST: postgres
+      DB_PORT: 5432
+      DB_NAME_AUTH: ${DB_NAME_AUTH:-gym_authentication}
+      DB_USERNAME: ${DB_USERNAME:-postgres}
+      DB_PASSWORD: ${DB_PASSWORD}
+      JWT_SECRET: ${JWT_SECRET}
+      JWT_EXPIRATION: ${JWT_EXPIRATION:-86400000}
+      EUREKA_HOST: eureka-server
+      EUREKA_PORT: 8761
+      RABBITMQ_HOST: rabbitmq
+      RABBITMQ_PORT: 5672
     depends_on: [postgres, rabbitmq, eureka-server, api-gateway]
     restart: unless-stopped
 
@@ -98,16 +133,20 @@ services:
       dockerfile: ./workout-service/Dockerfile
     ports: ["8586:8586"]
     networks: [spring, postgres]
+    mem_limit: 768m
+    mem_reservation: 512m
+    oom_score_adj: 300
     environment:
-      - DB_HOST=postgres
-      - DB_PORT=5432
-      - DB_NAME_EXERCISE=${DB_NAME_EXERCISE:-gym_exercise}
-      - DB_USERNAME=${DB_USERNAME:-postgres}
-      - DB_PASSWORD=${DB_PASSWORD}
-      - EUREKA_HOST=eureka-server
-      - EUREKA_PORT=8761
-      - RABBITMQ_HOST=rabbitmq
-      - RABBITMQ_PORT=5672
+      <<: *jvm_opts
+      DB_HOST: postgres
+      DB_PORT: 5432
+      DB_NAME_EXERCISE: ${DB_NAME_EXERCISE:-gym_exercise}
+      DB_USERNAME: ${DB_USERNAME:-postgres}
+      DB_PASSWORD: ${DB_PASSWORD}
+      EUREKA_HOST: eureka-server
+      EUREKA_PORT: 8761
+      RABBITMQ_HOST: rabbitmq
+      RABBITMQ_PORT: 5672
     depends_on: [postgres, rabbitmq, eureka-server, api-gateway]
     restart: unless-stopped
 
@@ -118,18 +157,25 @@ services:
       dockerfile: ./admin-service/Dockerfile
     ports: ["9000:9000"]
     networks: [spring]
+    mem_limit: 512m
+    mem_reservation: 384m
+    oom_score_adj: 500
     environment:
-      - SPRING_PROFILES_ACTIVE=${SPRING_PROFILES_ACTIVE:-docker}
-      - EUREKA_HOST=eureka-server
-      - EUREKA_PORT=8761
-      - ADMIN_USERNAME=${ADMIN_USERNAME:-admin}
-      - ADMIN_PASSWORD=${ADMIN_PASSWORD}
+      <<: *jvm_opts
+      SPRING_PROFILES_ACTIVE: ${SPRING_PROFILES_ACTIVE:-docker}
+      EUREKA_HOST: eureka-server
+      EUREKA_PORT: 8761
+      ADMIN_USERNAME: ${ADMIN_USERNAME:-admin}
+      ADMIN_PASSWORD: ${ADMIN_PASSWORD}
     depends_on: [eureka-server]
     restart: unless-stopped
 
   postgres:
     container_name: db-microservices
     image: postgres:16
+    mem_limit: 1024m
+    mem_reservation: 768m
+    oom_score_adj: 100
     environment:
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: ${DB_PASSWORD}
@@ -143,12 +189,21 @@ services:
   rabbitmq:
     image: rabbitmq:3.9.11-management-alpine
     container_name: rabbitmq-user-service
+    mem_limit: 384m
+    mem_reservation: 256m
+    oom_score_adj: 400
+    environment:
+      RABBITMQ_VM_MEMORY_HIGH_WATERMARK: "0.3"
     ports: ["5672:5672","15672:15672"]
     networks: [spring]
+    restart: unless-stopped
 
   prometheus:
     image: prom/prometheus:latest
     container_name: prometheus
+    mem_limit: 512m
+    mem_reservation: 384m
+    oom_score_adj: 600
     ports:
       - "9090:9090"
     volumes:
@@ -167,6 +222,9 @@ services:
   alertmanager:
     image: prom/alertmanager:latest
     container_name: alertmanager
+    mem_limit: 256m
+    mem_reservation: 192m
+    oom_score_adj: 700
     ports:
       - "9093:9093"
     volumes:
@@ -181,6 +239,9 @@ services:
   grafana:
     image: grafana/grafana:latest
     container_name: grafana
+    mem_limit: 384m
+    mem_reservation: 256m
+    oom_score_adj: 600
     ports:
       - "3000:3000"
     environment:
