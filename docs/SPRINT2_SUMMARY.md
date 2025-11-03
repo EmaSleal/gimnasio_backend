@@ -427,6 +427,30 @@ docker-compose up -d user-service
 
 ---
 
+## 🚀 Próximos Pasos - Sprint 3
+
+Con el sistema de observabilidad completado y optimizado (Fase 1), el siguiente sprint se enfoca en **mejoras arquitectónicas y calidad de código**.
+
+**Ver planificación detallada en:**
+📄 [`docs/sprints/sprint-3/MEJORAS_PENDIENTES.md`](sprints/sprint-3/MEJORAS_PENDIENTES.md)
+
+### Prioridades Sprint 3:
+1. 🔴 **Alta**: Implementar comunicación asíncrona con RabbitMQ
+2. 🔴 **Alta**: Desacoplar Authentication de User Service  
+3. 🔴 **Alta**: Configurar Circuit Breakers correctamente
+4. 🟡 **Media**: Estandarizar respuestas API y documentar con Swagger
+5. 🟡 **Media**: Centralizar configuración con Config Service
+6. 🟢 **Baja**: Optimización Fase 2 (Alpine, ajustes de memoria)
+
+**Estado Actual (Post-Sprint 2 + Optimización Fase 1)**:
+- Memoria total: **2,888 MB** (reducción de 35.8%)
+- 12 contenedores corriendo
+- RabbitMQ operacional pero **sin uso** (0% utilización)
+- Config Service operacional pero **no usado por servicios**
+- Circuit Breakers incluidos pero **sin configurar**
+
+---
+
 **Fecha de Finalización**: 2 de noviembre de 2025
 **Estado**: ✅ COMPLETADO (100%)
 **Próximo Sprint**: Sprint 3 - Eventos Asíncronos y Configuración Centralizada

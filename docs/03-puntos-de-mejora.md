@@ -1178,35 +1178,50 @@ jobs:
 
 ## 6. Roadmap de Implementación
 
-### Fase 1: Estabilización (1-2 semanas) 🔴
+> **⚠️ IMPORTANTE**: Las mejoras pendientes han sido catalogadas y priorizadas en **Sprint 3**.  
+> Ver: [`docs/sprints/sprint-3/MEJORAS_PENDIENTES.md`](sprints/sprint-3/MEJORAS_PENDIENTES.md)
+
+### ✅ Fase 1: Estabilización (COMPLETADA) 
 1. ✅ Migrar secretos a variables de entorno
 2. ✅ Cambiar DDL auto a `validate` + Flyway
 3. ✅ Eliminar IPs hardcodeadas
 4. ✅ Configurar actuator correctamente
 
-### Fase 2: Observabilidad (1 semana) 🟡
+### ✅ Fase 2: Observabilidad (COMPLETADA - Sprint 1 & 2)
 1. ✅ Implementar Admin Service
-2. ✅ Configurar Circuit Breakers
-3. ✅ Health checks personalizados
-4. ✅ Integrar con Prometheus/Grafana
+2. ✅ Integrar con Prometheus/Grafana
+3. ✅ Configurar Alertmanager
+4. ✅ Dashboards de monitoreo
 
-### Fase 3: Arquitectura (2 semanas) 🟡
-1. ✅ Implementar RabbitMQ para eventos
-2. ✅ Desacoplar Authentication de User Service
-3. ✅ Centralizar configuración con Config Service
-4. ✅ Crear Email Service independiente
+### ✅ Optimización Fase 1 (COMPLETADA)
+1. ✅ Optimización JVM (MaxRAMPercentage, G1GC, lazy-init)
+2. ✅ Límites de memoria (mem_limit, mem_reservation)
+3. ✅ OOM score adjustment
+4. ✅ Reducción de memoria: 35.8% (~1,611 MB)
 
-### Fase 4: Calidad (1-2 semanas) 🟢
-1. ✅ Estandarizar respuestas de API
-2. ✅ Validación de DTOs
-3. ✅ Global exception handler
-4. ✅ Documentación con Swagger
+### 🏗️ Fase 3: Arquitectura Asíncrona (Sprint 3 - PENDIENTE)
+1. ⏳ Implementar RabbitMQ para eventos (email, notificaciones, auditoría)
+2. ⏳ Desacoplar Authentication de User Service
+3. ⏳ Centralizar configuración con Config Service
+4. ⏳ Configurar Circuit Breakers correctamente
 
-### Fase 5: DevOps (1 semana) ⚪
-1. ✅ Optimizar Dockerfiles
-2. ✅ Logging estructurado
-3. ✅ Tests automatizados
-4. ✅ CI/CD pipeline
+### 🏗️ Fase 4: Calidad de Código (Sprint 3 - PENDIENTE)
+1. ⏳ Estandarizar respuestas de API (`ApiResponse<T>`)
+2. ⏳ Validación de DTOs con Bean Validation
+3. ⏳ Global exception handler
+4. ⏳ Documentación con Swagger/OpenAPI
+
+### 🏗️ Optimización Fase 2 (Sprint 3 - PENDIENTE)
+1. ⏳ Migrar a imágenes Alpine Linux
+2. ⏳ Evaluar OpenJ9 vs Temurin
+3. ⏳ Ajuste fino de límites de memoria
+4. ⏳ Health checks personalizados
+
+### 🔮 Fase 5: DevOps y Testing (Sprint 3 - FUTURO)
+1. ⏳ Logging estructurado (JSON/Logstash)
+2. ⏳ Tests automatizados (>50% coverage)
+3. ⏳ Rate limiting en Gateway
+4. ⏳ CI/CD pipeline (GitHub Actions)
 
 ---
 

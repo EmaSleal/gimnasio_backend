@@ -280,15 +280,48 @@ Agregar alertas de Prometheus para:
 
 ## 🔮 Próximas Fases
 
-### Fase 2: Imágenes Optimizadas (Futuro)
-- Cambiar a `eclipse-temurin:21-jre-alpine` (musl, más liviana)
-- O evaluar `ibm-semeru-runtimes:open-21-jre` (OpenJ9)
-- Reducción adicional: 15-25%
+> **📋 Ver planificación detallada en:** [`docs/sprints/sprint-3/MEJORAS_PENDIENTES.md`](sprints/sprint-3/MEJORAS_PENDIENTES.md)
 
-### Fase 3: Spring Native (Futuro)
-- Compilar servicios CRUD a native con GraalVM
-- Reducción dramática: 60-80% en servicios compilados
-- Inicio en milisegundos vs segundos
+### Fase 2: Imágenes Optimizadas (Sprint 3 - Planificado)
+**Objetivo**: Reducir tamaño de imágenes Docker y mejorar startup time
+
+**Opciones**:
+- **Opción A**: Cambiar a `eclipse-temurin:21-jre-alpine` (musl, más liviana)
+  - Reducción de imagen: 40-50%
+  - Startup time: 20-30s (vs 30-45s actual)
+  
+- **Opción B**: Evaluar `ibm-semeru-runtimes:open-21-jre` (OpenJ9)
+  - Reducción heap: 30-40%
+  - Menor footprint de memoria
+
+**Reducción adicional estimada**: 10-15% memoria total
+
+**Esfuerzo**: 4-6 horas  
+**Riesgo**: Medio (compatibilidad de librerías nativas en Alpine)
+
+Ver detalles en: [Sprint 3 - Sección 1.1](sprints/sprint-3/MEJORAS_PENDIENTES.md#11-fase-2---optimización-de-imágenes-docker)
+
+---
+
+### Fase 3: Spring Native (Investigación - Largo Plazo)
+**Objetivo**: Compilar servicios a binarios nativos con GraalVM
+
+**Beneficios potenciales**:
+- ⚡ Startup instantáneo (<100ms vs 30s)
+- 💾 Reducción memoria: 50-70%
+- 📦 Imágenes: 50-80 MB por servicio
+
+**Desafíos**:
+- ⚠️ Reflection y proxies dinámicos requieren configuración manual
+- ⚠️ No todas las librerías Spring compatibles
+- ⚠️ Build time aumenta significativamente (5-10 min por servicio)
+- ⚠️ Debugging más complejo
+
+**Estado**: Investigación requerida  
+**Esfuerzo**: 2-3 semanas (experimental)  
+**Riesgo**: Alto (cambio arquitectónico significativo)
+
+Ver detalles en: [Sprint 3 - Sección 1.3](sprints/sprint-3/MEJORAS_PENDIENTES.md#13-fase-3---spring-native-graalvm-largo-plazo)
 
 ## 📊 Métricas de Éxito
 

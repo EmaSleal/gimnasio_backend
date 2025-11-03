@@ -189,11 +189,9 @@ services:
   rabbitmq:
     image: rabbitmq:3.9.11-management-alpine
     container_name: rabbitmq-user-service
-    mem_limit: 384m
-    mem_reservation: 256m
+    mem_limit: 512m
+    mem_reservation: 384m
     oom_score_adj: 400
-    environment:
-      RABBITMQ_VM_MEMORY_HIGH_WATERMARK: "0.3"
     ports: ["5672:5672","15672:15672"]
     networks: [spring]
     restart: unless-stopped
