@@ -1,0 +1,41 @@
+spring:
+  application:
+    name: gimnasio-backend
+  datasource:
+    url: ${DB_URL:jdbc:postgresql://localhost:5432/gimnasio}
+    username: ${DB_USERNAME:postgres}
+    password: ${DB_PASSWORD:postgres}
+    driver-class-name: org.postgresql.Driver
+  jpa:
+    hibernate:
+      ddl-auto: validate
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.PostgreSQLDialect
+    show-sql: false
+  flyway:
+    enabled: true
+    baseline-on-migrate: true
+    locations:
+      - classpath:db/migration/module-user
+      - classpath:db/migration/module-workout
+      - classpath:db/migration/module-plan
+
+app:
+  jwt:
+    secret: ${JWT_SECRET}
+    access-expiration-ms: ${JWT_ACCESS_EXPIRATION_MS:900000}
+    refresh-expiration-ms: ${JWT_REFRESH_EXPIRATION_MS:604800000}
+    reset-expiration-ms: ${JWT_RESET_EXPIRATION_MS:86400000}
+  auth:
+    resend-api-key: ${RESEND_API_KEY}
+    from: ${AUTH_FROM_EMAIL:noreply@gimnasio.com}
+    frontend-url: ${FRONTEND_URL:http://localhost:4321}
+
+server:
+  port: ${PORT:8080}
+
+logging:
+  level:
+    cr.ac.backend: INFO
+    org.springframework.security: WARN
