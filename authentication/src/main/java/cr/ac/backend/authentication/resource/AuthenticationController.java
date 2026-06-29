@@ -25,14 +25,22 @@ public class AuthenticationController {
         return users.map(ResponseEntity::ok).orElseGet(() -> ResponseEntity.notFound().build());
     }
 
+    /**
+     * @deprecated Este endpoint está obsoleto. Use POST /user/register directamente en user-service.
+     * Este endpoint se mantiene temporalmente para backward compatibility pero será eliminado en futuras versiones.
+     * Redirige la solicitud a user-service sin procesamiento adicional.
+     * 
+     * Flujo recomendado:
+     * Cliente → Gateway → User Service (directo)
+     * User Service publica evento UserCreated → Authentication lo procesa (async)
+     */
+    @Deprecated
     @PostMapping("/register")
     public ResponseEntity<UserDto> register(@RequestBody User request) {
+        log.warn("⚠️  DEPRECATED: /auth/register está obsoleto. Use /user/register directamente.");
+        
+        // Redirigir a user-service (backward compatibility temporal)
         var userLogin = service.register(request);
-        /*UserDto userDto = UserDto.builder()
-                .userName(userLogin.userName())
-                .email(userLogin.email())
-                .role(userLogin.role())
-                .build();*/
         return ResponseEntity.ok(userLogin);
     }
 

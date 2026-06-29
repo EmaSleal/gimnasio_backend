@@ -780,13 +780,171 @@ spring:
 
 ---
 
-### 3.5 Implementar Circuit Breaker Correctamente
+### 3.5 Implementar Zipkin para Tracing Distribuido
 
-**Estado Actual**: Resilience4j incluido en Gateway pero sin configuración
+**Estado Actual**: 
+- Dependencias de Zipkin incluidas en api-gateway
+- Configuración deshabilitada (servidor Zipkin no disponible)
+- Errores de conexión solucionados temporalmente
 
-**Problema**: Si user-service cae, las peticiones siguen intentando sin fallback
+**¿Es Necesario?**
 
-**Solución**:
+**NO para funcionamiento básico**:
+- ✅ Los microservicios funcionan sin Zipkin
+- ✅ Circuit breakers operan correctamente
+- ✅ Prometheus/Grafana monitorean métricas
+
+**SÍ para observabilidad avanzada**:
+- 🔍 **Tracing distribuido**: Rastrear peticiones a través de múltiples servicios
+- 📊 **Análisis de latencia**: Identificar cuellos de botella entre microservicios
+- 🐛 **Debugging complejo**: Saber exactamente dónde falló una petición en la cadena
+- ⏱️ **Medición de performance**: Ver tiempos de respuesta por cada hop
+- 🔗 **Correlación de logs**: Conectar logs de diferentes servicios con trace ID
+
+**Ejemplo de Uso Real**:
+```
+Usuario reporta: "El login es muy lento"
+
+Sin Zipkin:
+- Solo ves: "Login tardó 2.5s"
+- No sabes dónde está el problema
+
+Con Zipkin:
+Request /auth/login → 2,500ms total
+  ├─ API Gateway (8ms)
+  ├─ Authentication Service (180ms)
+  │   ├─ GET /user/credentials → User Service (1,950ms) ← AQUÍ EL PROBLEMA
+  │   │   └─ Database query (1,900ms) ← Query lenta sin índice
+  │   └─ Password validation (20ms)
+  └─ JWT generation (12ms)
+
+Ahora sabes: Optimizar query de User Service
+```
+
+**Implementación Propuesta**:
+
+#### Paso 1: Agregar Zipkin al Docker Compose
+```yaml
+# docker-compose.yml
+services:
+  zipkin:
+    image: openzipkin/zipkin:latest
+    container_name: zipkin
+    ports:
+      - "9411:9411"
+    networks:
+      - gym-network
+    environment:
+      - STORAGE_TYPE=mem  # Para desarrollo, usar postgres/cassandra en producción
+    restart: unless-stopped
+    mem_limit: 512m
+    mem_reservation: 256m
+```
+
+#### Paso 2: Habilitar Zipkin en Servicios
+```yaml
+# api-gateway/application.yml (descomentar)
+spring:
+  zipkin:
+    base-url: http://zipkin:9411
+    enabled: true
+
+management:
+  tracing:
+    enabled: true
+    sampling:
+      probability: 1.0  # 100% en dev, 0.1 (10%) en producción
+  zipkin:
+    tracing:
+      endpoint: http://zipkin:9411/api/v2/spans
+```
+
+#### Paso 3: Configurar en Todos los Servicios
+```yaml
+# user-service, workout-service, authentication/application.yml
+spring:
+  application:
+    name: user-service  # Nombre que aparecerá en Zipkin
+  zipkin:
+    base-url: http://zipkin:9411
+    enabled: true
+
+management:
+  tracing:
+    enabled: true
+    sampling:
+      probability: 0.1  # 10% de las peticiones en producción (menos overhead)
+```
+
+#### Paso 4: Configuración de Trazas
+```yaml
+# Logging pattern con trace ID (ya configurado)
+logging:
+  pattern:
+    level: '%5p [${spring.application.name:},%X{traceId:-},%X{spanId:-}]'
+```
+
+**Acceso al Dashboard**:
+```
+http://localhost:9411/zipkin
+```
+
+**Características del Dashboard**:
+- 🔎 **Search**: Buscar trazas por servicio, operación, tags
+- 📈 **Dependencies**: Mapa de dependencias entre servicios
+- 🕐 **Timeline**: Visualización temporal de spans
+- 📊 **Metrics**: Latencias p50, p95, p99
+
+**Integración con Prometheus/Grafana**:
+```yaml
+# prometheus.yml
+scrape_configs:
+  - job_name: 'zipkin'
+    static_configs:
+      - targets: ['zipkin:9411']
+```
+
+**Ventajas**:
+- ✅ Identifica servicios lentos en la cadena
+- ✅ Detecta errores en cascada
+- ✅ Visualiza arquitectura real (quién llama a quién)
+- ✅ Debugging en producción sin logs invasivos
+- ✅ Análisis de SLA por endpoint
+
+**Desventajas**:
+- ⚠️ Overhead de performance (~1-5ms por request con sampling 100%)
+- ⚠️ Consumo de memoria (512MB para Zipkin + storage)
+- ⚠️ Complejidad adicional en el stack
+
+**Recomendación**:
+- 🟢 **Desarrollo**: Habilitar con sampling 100% para debugging
+- 🟡 **Staging**: Habilitar con sampling 50%
+- 🟢 **Producción**: Habilitar con sampling 10% (balance entre observabilidad y overhead)
+
+**Alternativas**:
+- **Jaeger**: Similar a Zipkin, más features (CNCF project)
+- **AWS X-Ray**: Si estás en AWS
+- **Google Cloud Trace**: Si estás en GCP
+- **New Relic / DataDog**: Soluciones comerciales con más features
+
+**Estado**: ⏳ PENDIENTE - Prioridad MEDIA-ALTA  
+**Esfuerzo**: 2-3 horas (configuración + testing)  
+**Sprint**: Sprint 3 - Fase de Observabilidad Avanzada
+
+---
+
+### 3.6 Implementar Circuit Breaker Correctamente
+
+**Estado Actual**: ✅ Resilience4j configurado y funcionando en API Gateway
+
+**Implementación Completada** (Sprint 3 - Fase 3):
+- ✅ Circuit breakers para user-service, workout-service, authentication
+- ✅ Configuración: sliding-window=10, failure-rate=50%, timeout=3s
+- ✅ FallbackController con respuestas HTTP 503 amigables
+- ✅ Métricas expuestas en /actuator (circuitbreaker.state, calls, failure.rate)
+- ✅ Dependencia reactor-resilience4j correcta para Gateway reactivo
+
+**Configuración Implementada**:
 
 ```yaml
 # api-gateway/application.yml
@@ -1199,11 +1357,14 @@ jobs:
 3. ✅ OOM score adjustment
 4. ✅ Reducción de memoria: 35.8% (~1,611 MB)
 
-### 🏗️ Fase 3: Arquitectura Asíncrona (Sprint 3 - PENDIENTE)
-1. ⏳ Implementar RabbitMQ para eventos (email, notificaciones, auditoría)
-2. ⏳ Desacoplar Authentication de User Service
-3. ⏳ Centralizar configuración con Config Service
-4. ⏳ Configurar Circuit Breakers correctamente
+### 🏗️ Fase 3: Arquitectura Asíncrona (Sprint 3 - EN PROGRESO)
+1. ✅ Implementar RabbitMQ para eventos (email, notificaciones, auditoría) - COMPLETADO
+2. ✅ Desacoplar Authentication de User Service - COMPLETADO
+3. ✅ Configurar Circuit Breakers correctamente - COMPLETADO
+4. ⏳ Centralizar configuración con Config Service - PENDIENTE
+5. ⏳ Implementar Zipkin para tracing distribuido - PENDIENTE (Prioridad MEDIA-ALTA)
+
+**Progreso**: `[████████░░] 60%` (3/5 tareas completadas)
 
 ### 🏗️ Fase 4: Calidad de Código (Sprint 3 - PENDIENTE)
 1. ⏳ Estandarizar respuestas de API (`ApiResponse<T>`)

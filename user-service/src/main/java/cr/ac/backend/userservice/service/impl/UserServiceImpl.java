@@ -2,7 +2,9 @@ package cr.ac.backend.userservice.service.impl;
 
 import cr.ac.backend.userservice.model.User;
 import cr.ac.backend.userservice.model.UserAuth;
+import cr.ac.backend.userservice.model.UserCredentialsDto;
 import cr.ac.backend.userservice.model.UserDto;
+import cr.ac.backend.userservice.publisher.UserEventPublisher;
 import cr.ac.backend.userservice.repo.UserRepository;
 import cr.ac.backend.userservice.service.UserService;
 import lombok.RequiredArgsConstructor;
@@ -20,10 +22,11 @@ public class UserServiceImpl implements UserService {
 
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
+    private final UserEventPublisher userEventPublisher;
 
     @Override
     public User register(User request) {
-        //log.info("Registering user {}", request);
+        log.info("📝 Registrando usuario: {}", request.getUsername());
         //get the current date of the system
         var currentDate = java.time.LocalDateTime.now();
         var userSecurity = User.builder()
@@ -39,8 +42,15 @@ public class UserServiceImpl implements UserService {
                 .createdAt(currentDate)
                 .updatedAt(currentDate)
                 .build();
-        userRepository.save(userSecurity);
-        return userSecurity;
+        
+        // Persistir usuario en base de datos
+        User savedUser = userRepository.save(userSecurity);
+        log.info("✅ Usuario persistido con ID: {}", savedUser.getId());
+        
+        // Publicar evento UserCreated de forma asíncrona
+        userEventPublisher.publishUserCreated(savedUser);
+        
+        return savedUser;
     }
 
     @Override
@@ -98,6 +108,48 @@ public class UserServiceImpl implements UserService {
     public Optional<UserDto> findByUserName(String username) {
         var user = userRepository.findByUserName(username);
         return user.map(value -> new UserDto(value.getId(), value.getUsername(), value.getEmail(), value.getRole(), value.isEnabled(), value.isAccountNonExpired(), value.isCredentialsNonExpired(), value.isAccountNonLocked(), null));
+    }
+
+    /**
+     * Obtiene credenciales optimizadas para login (flujo desacoplado).
+     * 
+     * Devuelve solo datos necesarios para autenticación:
+     * - id, email, passwordHash, role, enabled
+     * 
+     * IMPORTANTE:
+     * - passwordHash es bcrypt hash, no password plano
+     * - Solo para uso interno entre servicios
+     * - Logging NO debe incluir passwordHash
+     * 
+     * @param email Email del usuario
+     * @return UserCredentialsDto con credenciales para login
+     */
+    @Override
+    public Optional<UserCredentialsDto> getCredentialsByEmail(String email) {
+        log.info("🔍 Obteniendo credenciales para login - Email: {}", email);
+        
+        Optional<User> userOpt = userRepository.findByEmail(email);
+        
+        if (userOpt.isEmpty()) {
+            log.warn("⚠️ Usuario no encontrado: {}", email);
+            return Optional.empty();
+        }
+        
+        User user = userOpt.get();
+        
+        UserCredentialsDto credentials = UserCredentialsDto.builder()
+                .id(user.getId())
+                .email(user.getEmail())
+                .passwordHash(user.getPassword())  // Hash bcrypt
+                .role(user.getRole())
+                .enabled(user.isEnabled())
+                .build();
+        
+        log.info("✅ Credenciales obtenidas - User ID: {}, Role: {}, Enabled: {}", 
+                 user.getId(), user.getRole(), user.isEnabled());
+        // NOTA: NO loguear passwordHash (toString está sobrescrito para ocultarlo)
+        
+        return Optional.of(credentials);
     }
 
     @Override

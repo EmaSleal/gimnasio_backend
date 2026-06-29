@@ -1,20 +1,16 @@
 package cr.ac.backend.authentication.resource;
 
 import cr.ac.backend.authentication.model.AuthenticationResponse;
-import cr.ac.backend.authentication.model.User;
 import cr.ac.backend.authentication.model.UserAuth;
-import cr.ac.backend.authentication.model.UserDto;
+import cr.ac.backend.authentication.publisher.EmailEventPublisher;
 import cr.ac.backend.authentication.service.AuthenticationService;
-import cr.ac.backend.authentication.service.impl.EmailService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.view.RedirectView;
 
-import java.util.Date;
 import java.util.Optional;
 
 @RestController
@@ -24,8 +20,7 @@ import java.util.Optional;
 public class ForgotPasswordController {
 
     private final AuthenticationService service;
-    @Autowired
-    private final EmailService emailService;
+    private final EmailEventPublisher emailEventPublisher;
 
     @GetMapping("/email")
     public RedirectView RedirecionarConToken(@RequestParam("token") String token, Model model) {
@@ -37,12 +32,22 @@ public class ForgotPasswordController {
     }
 
     @PostMapping
-    public ResponseEntity<Date> forgotPassword(@RequestBody UserAuth request) {
+    public ResponseEntity<String> forgotPassword(@RequestBody UserAuth request) {
         var response = service.TokenforgotPassword(request.email());
         log.info("UserDto: {}", response);
         if (response.isPresent()) {
-            var fecha = emailService.sendForgotPasswordEmail(request.email(), response.get().getToken());
-            return ResponseEntity.ok(fecha);
+            // Calcular expiración del token (24 horas)
+            long expiresAt = System.currentTimeMillis() + (24 * 60 * 60 * 1000);
+            
+            // Publicar evento de forma asíncrona
+            emailEventPublisher.publishPasswordResetEmail(
+                request.email(), 
+                response.get().getToken(),
+                expiresAt
+            );
+            log.info("✅ PasswordResetEmailEvent publicado para email: {} (latencia reducida)", request.email());
+            
+            return ResponseEntity.ok("Password reset email sent successfully");
         }
         return ResponseEntity.notFound().build();
 

@@ -5,6 +5,7 @@ package cr.ac.backend.userservice.service;
 import cr.ac.backend.userservice.model.AuthenticationResponse;
 import cr.ac.backend.userservice.model.User;
 import cr.ac.backend.userservice.model.UserAuth;
+import cr.ac.backend.userservice.model.UserCredentialsDto;
 import cr.ac.backend.userservice.model.UserDto;
 
 import java.util.List;
@@ -15,6 +16,14 @@ public interface UserService {
 
     Optional<UserDto> authenticate(UserAuth request);
 
+    /**
+     * Obtiene credenciales optimizadas para login.
+     * Devuelve solo: id, email, passwordHash, role, enabled
+     * 
+     * @param email Email del usuario
+     * @return UserCredentialsDto con datos necesarios para autenticación
+     */
+    Optional<UserCredentialsDto> getCredentialsByEmail(String email);
 
     Optional<List<UserDto>> getUsers();
 

@@ -31,9 +31,10 @@
             <scope>test</scope>
         </dependency>
 
+        <!-- Spring Cloud Circuit Breaker with Resilience4j for Reactive Gateway -->
         <dependency>
             <groupId>org.springframework.cloud</groupId>
-            <artifactId>spring-cloud-starter-circuitbreaker-resilience4j</artifactId>
+            <artifactId>spring-cloud-starter-circuitbreaker-reactor-resilience4j</artifactId>
         </dependency>
 
 

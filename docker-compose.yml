@@ -45,7 +45,11 @@ services:
       EUREKA_HOST: eureka-server
       EUREKA_PORT: 8761
       CONFIG_GIT_URI: ${CONFIG_GIT_URI}
-    depends_on: [rabbitmq, eureka-server]
+    depends_on:
+      rabbitmq:
+        condition: service_healthy
+      eureka-server:
+        condition: service_started
     restart: unless-stopped
 
   api-gateway:
@@ -68,7 +72,11 @@ services:
       RABBITMQ_PORT: 5672
       RABBITMQ_USERNAME: guest
       RABBITMQ_PASSWORD: guest
-    depends_on: [rabbitmq, eureka-server]
+    depends_on:
+      rabbitmq:
+        condition: service_healthy
+      eureka-server:
+        condition: service_started
     restart: unless-stopped
 
   authentication:
@@ -97,7 +105,17 @@ services:
       RABBITMQ_PORT: 5672
       RABBITMQ_USERNAME: guest
       RABBITMQ_PASSWORD: guest
-    depends_on: [rabbitmq, eureka-server, api-gateway, user-service, postgres]
+    depends_on:
+      rabbitmq:
+        condition: service_healthy
+      eureka-server:
+        condition: service_started
+      api-gateway:
+        condition: service_started
+      user-service:
+        condition: service_started
+      postgres:
+        condition: service_healthy
     restart: unless-stopped
 
   user-service:
@@ -123,7 +141,15 @@ services:
       EUREKA_PORT: 8761
       RABBITMQ_HOST: rabbitmq
       RABBITMQ_PORT: 5672
-    depends_on: [postgres, rabbitmq, eureka-server, api-gateway]
+    depends_on:
+      postgres:
+        condition: service_healthy
+      rabbitmq:
+        condition: service_healthy
+      eureka-server:
+        condition: service_started
+      api-gateway:
+        condition: service_started
     restart: unless-stopped
 
   workout-service:
@@ -147,7 +173,15 @@ services:
       EUREKA_PORT: 8761
       RABBITMQ_HOST: rabbitmq
       RABBITMQ_PORT: 5672
-    depends_on: [postgres, rabbitmq, eureka-server, api-gateway]
+    depends_on:
+      postgres:
+        condition: service_healthy
+      rabbitmq:
+        condition: service_healthy
+      eureka-server:
+        condition: service_started
+      api-gateway:
+        condition: service_started
     restart: unless-stopped
 
   admin-service:
@@ -184,6 +218,12 @@ services:
       - postgres:/var/lib/postgresql/data
     ports: ["5432:5432"]
     networks: [postgres]
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 10s
     restart: unless-stopped
 
   rabbitmq:
@@ -194,6 +234,12 @@ services:
     oom_score_adj: 400
     ports: ["5672:5672","15672:15672"]
     networks: [spring]
+    healthcheck:
+      test: ["CMD", "rabbitmq-diagnostics", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 10s
     restart: unless-stopped
 
   prometheus:

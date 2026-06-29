@@ -33,7 +33,7 @@ public class UserController {
         return users.map(ResponseEntity::ok).orElseGet(() -> ResponseEntity.notFound().build());
     }
 
-    @PostMapping("/save")
+    @PostMapping({"/save", "/register"})
     public ResponseEntity<UserDto> register(@RequestBody User request) {
         var userLogin = service.register(request);
         UserDto userDto = UserDto.builder()
@@ -67,6 +67,29 @@ public class UserController {
     public ResponseEntity<UserDto> findByEmail(@PathVariable String email) {
         Optional<UserDto> user = service.findByEmail(email);
         return user.map(ResponseEntity::ok).orElseGet(() -> ResponseEntity.notFound().build());
+    }
+
+    /**
+     * Endpoint optimizado para login - Devuelve solo credenciales necesarias.
+     * 
+     * Flujo desacoplado:
+     * Authentication Service → GET /user/credentials/{email} → User Service
+     * 
+     * Datos devueltos:
+     * - id, email, passwordHash, role, enabled
+     * 
+     * IMPORTANTE:
+     * - Solo para uso interno entre servicios
+     * - passwordHash es bcrypt hash, nunca password plano
+     * - Minimiza datos transferidos vs findByEmail
+     * 
+     * @param email Email del usuario
+     * @return UserCredentialsDto con datos de autenticación
+     */
+    @GetMapping("/credentials/{email}")
+    public ResponseEntity<cr.ac.backend.userservice.model.UserCredentialsDto> getCredentialsByEmail(@PathVariable String email) {
+        Optional<cr.ac.backend.userservice.model.UserCredentialsDto> credentials = service.getCredentialsByEmail(email);
+        return credentials.map(ResponseEntity::ok).orElseGet(() -> ResponseEntity.notFound().build());
     }
 
     @DeleteMapping("/delete/{id}")
